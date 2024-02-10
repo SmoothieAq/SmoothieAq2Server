@@ -1,0 +1,62 @@
+- type: EnumSimple
+  id: boolean
+  name: Boolean
+  description:
+  values:
+    - type: EnumValueSimple
+      id: qtrue
+      name: Is true
+    - type: EnumValueSimple
+      id: qfalse
+      name: Is false
+- type: EnumSimple
+  id: place
+  name: Place
+  description: The placement of a device, a sensor, or of any other thing
+  values:
+    - type: EnumValueSimple
+      id: aquarium
+      name: Inside the aquarium
+    - type: EnumValueSimple
+      id: cupboard
+      name: Inside the cupboard
+    - type: EnumValueSimple
+      id: above
+      name: Above the aquarium
+    - type: EnumValueSimple
+      id: outside
+      name: Outside the aquarium and the cupboard
+    - type: EnumValueSimple
+      id: room
+      name: Elsewhere in the room
+- type: EnumSimple
+  id: site
+  name: Aquariums
+  description:
+  values:
+    - type: EnumValueSimple
+      id: aquarium1
+      name: My aquarium
+- type: EnumSimple
+  id: deviceType
+  name: Type of device
+  description:
+  values:
+    - type: EnumValueSimple
+      id: pH
+      name: pH measure
+    - type: EnumValueSimple
+      id: filter
+      name: Filter
+- type: QuantityType
+  id: length
+  name: Length
+  values:
+    - type: Unit
+      id: m
+      name: meter
+    - type: Unit
+      id: cm
+      name: centimeter
+      relTimes: 0.01
+      relUnit: m
