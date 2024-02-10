@@ -3,35 +3,26 @@ from typing import Optional
 
 import reactivex as rx
 
-from .pollingdriver import PollingDriver
+from .driver import Driver
 from .driver import Status
 from ..emit import RawEmit
 from ..model import thing as aqt
 
 
-class DummyDriver(PollingDriver):
-    id = "DummyDriver"
-    mu_key: str = 'generateGaussMu'
-    sigma_key: str = 'generateGaussSigma'
+class MemoryDriver(Driver):
+    id = "MemoryDriver"
     rx_key: str = 'A'
 
     def __init__(self, m_driver: aqt.Driver):
         super().__init__(m_driver)
-        self.generateGaussMu: Optional[float] = None
-        self.generateGaussSigma: Optional[float] = None
 
     def _set_subjects(self) -> dict[str, rx.subject.Subject]:
         return {self.rx_key: rx.Subject[RawEmit]()}
-
-    def _init(self):
-        super()._init()
-        self.generateGaussMu = float(self.params[self.mu_key])
-        self.generateGaussSigma = float(self.params[self.sigma_key])
 
     def start(self) -> None:
         super().start()
         self._status(Status.RUNNING)
 
-    def poll(self) -> None:
-        self._rx_observers[self.rx_key].on_next(
-            RawEmit(value=random.gauss(self.generateGaussMu, self.generateGaussSigma)))
+    def set(self, rx_key: str, emit: RawEmit) -> None:
+        assert rx_key == self.rx_key
+        self._rx_observers[rx_key].on_next(emit)

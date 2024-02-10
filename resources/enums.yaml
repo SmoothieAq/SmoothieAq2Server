@@ -1,0 +1,123 @@
+- type: EnumSimple
+  id: operation
+  name: Observable operation
+  description:
+  values:
+    - type: EnumValueSimple
+      id: poll
+      name: Poll
+    - type: EnumValueSimple
+      id: measure
+      name: Measure
+    - type: EnumValueSimple
+      id: set
+      name: Set value
+    - type: EnumValueSimple
+      id: add
+      name: Add value
+    - type: EnumValueSimple
+      id: reset
+      name: Reset value
+    - type: EnumValueSimple
+      id: fire
+      name: Fire event
+- type: EnumSimple
+  id: boolean
+  name: Boolean
+  description:
+  values:
+    - type: EnumValueSimple
+      id: "true"
+      name: Is true
+    - type: EnumValueSimple
+      id: "false"
+      name: Is false
+- type: EnumSimple
+  id: place
+  name: Place
+  description: The placement of a device, a sensor, or of any other thing
+  values:
+    - type: EnumValueSimple
+      id: aquarium
+      name: Inside the aquarium
+    - type: EnumValueSimple
+      id: cupboard
+      name: Inside the cupboard
+    - type: EnumValueSimple
+      id: above
+      name: Above the aquarium
+    - type: EnumValueSimple
+      id: outside
+      name: Outside the aquarium and the cupboard
+    - type: EnumValueSimple
+      id: room
+      name: Elsewhere in the room
+- type: EnumSimple
+  id: site
+  name: Aquariums
+  description:
+  values:
+    - type: EnumValueSimple
+      id: aquarium1
+      name: My aquarium
+- type: EnumSimple
+  id: deviceType
+  name: Type of device
+  description:
+  values:
+    - type: EnumValueSimple
+      id: pH
+      name: pH measure
+    - type: EnumValueSimple
+      id: filter
+      name: Filter
+    - type: EnumValueSimple
+      id: computer
+      name: Computer
+- type: EnumSimple
+  id: category
+  name: Category
+  values:
+    - type: EnumValueSimple
+      id: primary
+      name: Primary
+    - type: EnumValueSimple
+      id: secondary
+      name: Secondary
+    - type: EnumValueSimple
+      id: aux
+      name: Auxiliary
+    - type: EnumValueSimple
+      id: internal
+      name: Internal
+- type: QuantityType
+  id: length
+  name: Length
+  values:
+    - type: Unit
+      id: m
+      name: meter
+    - type: Unit
+      id: cm
+      name: centimeter
+      relTimes: 0.01
+      relUnit: m
+- type: QuantityType
+  id: fraction
+  name: Fraction
+  values:
+    - type: Unit
+      id: _fraction
+      name: fraction
+    - type: Unit
+      id: "%"
+      name: percentage
+      relTimes: 100
+      relUnit: _fraction
+- type: QuantityType
+  id: temp
+  name: Temperature
+  values:
+    - type: Unit
+      id: "°C"
+      name: degrees Celsius
