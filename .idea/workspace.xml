@@ -4,32 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
+      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/drivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/drivers.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/enums.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/enums.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/device.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/device.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/devices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/expression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/observable.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/observable.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/driver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/pollingdriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/pollingdriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/emit.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/emit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/enumtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/enumtest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/enum.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/enum.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/expression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/thing.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/thing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/objectstore.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/objectstore.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/rxtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/rxtest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,15 +40,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/jesper/PycharmProjects/python1/smoothieaq/driver&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.SmoothieAq Uvicorn.executor": "Debug",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/jesper/PycharmProjects/python1/smoothieaq/driver"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/smoothieaq/driver" />
@@ -81,7 +62,30 @@
       <recent name="$PROJECT_DIR$/smoothieaq" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.SmoothieAq Uvicorn">
+    <configuration name="SmoothieAq Uvicorn" type="PythonConfigurationType" factoryName="Python">
+      <module name="SmoothieAq2Server" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (python1)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="uvicorn" />
+      <option name="PARAMETERS" value="smoothieaq.server:app --reload" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="true" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="SmoothieAq2Server" />
       <option name="ENV_FILES" value="" />
@@ -206,6 +210,10 @@
       <option name="USE_PATTERN" value="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.SmoothieAq Uvicorn" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -223,6 +231,15 @@
       <option name="presentableId" value="Default" />
       <updated>1705555342478</updated>
     </task>
+    <task id="LOCAL-00001" summary="-">
+      <option name="closed" value="true" />
+      <created>1707591506119</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1707591506119</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -235,6 +252,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="-" />
+    <option name="LAST_COMMIT_MESSAGE" value="-" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
