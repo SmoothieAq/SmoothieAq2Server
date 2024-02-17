@@ -5,11 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/div/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/emits.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/routes/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/util/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/util/rxutil.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SmoothieAq2Server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SmoothieAq2Server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/device.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/device.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/expression.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/observable.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/observable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/driver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/emit.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/div/emit.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/objectstore.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/div/objectstore.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,22 +59,25 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Python.SmoothieAq Uvicorn.executor": "Debug",
+    "Python.SmoothieAq Uvicorn.executor": "Run",
     "Python.main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/jesper/PycharmProjects/python1/smoothieaq/driver"
+    "last_opened_file_path": "/Users/jl/PycharmProjects/SmoothieAq2Server/smoothieaq/routes",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/smoothieaq/routes" />
       <recent name="$PROJECT_DIR$/smoothieaq/driver" />
       <recent name="$PROJECT_DIR$/smoothieaq/device" />
       <recent name="$PROJECT_DIR$/resources" />
       <recent name="$PROJECT_DIR$/model" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/smoothieaq/div" />
       <recent name="$PROJECT_DIR$/smoothieaq/device" />
       <recent name="$PROJECT_DIR$/smoothieaq" />
     </key>
@@ -72,7 +92,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (python1)" />
+      <option name="SDK_NAME" value="Python 3.12 (pythonProject)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -82,28 +102,6 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="true" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
       <method v="2" />
@@ -130,86 +128,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Docutils task">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Sphinx task">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Autodetect">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="SmoothieAq2Server" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.main" />
       <item itemvalue="Python.SmoothieAq Uvicorn" />
@@ -218,7 +136,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95" />
+        <option value="bundled-python-sdk-5a2391486177-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13763.11" />
       </set>
     </attachedChunks>
   </component>

@@ -1,14 +1,13 @@
-import time
 from enum import StrEnum, auto
 
 import reactivex as rx
 import reactivex.operators as op
 from reactivex.disposable import Disposable
 
-from ..driver.drivers import *
-from ..driver.driver import Status as DriverStatus
-from ..emit import *
+from smoothieaq.div.emit import *
 from .expression import as_observable
+from ..driver.driver import Status as DriverStatus
+from ..driver.drivers import *
 
 
 class Status(StrEnum):
@@ -121,7 +120,6 @@ class Observable:
 
 
 class Measure(Observable):
-
 
     def measurement(self, value: float, note: str = None) -> None:
         self._driver().set(self.m_observable.id, RawEmit(value=value, note=note))

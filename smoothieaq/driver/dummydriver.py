@@ -3,9 +3,9 @@ from typing import Optional
 
 import reactivex as rx
 
-from .pollingdriver import PollingDriver
+from smoothieaq.div.emit import RawEmit
 from .driver import Status
-from ..emit import RawEmit
+from .pollingdriver import PollingDriver
 from ..model import thing as aqt
 
 

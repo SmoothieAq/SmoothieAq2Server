@@ -1,9 +1,10 @@
-from pydantic import RootModel
-from pydantic_yaml import parse_yaml_file_as
 from typing import Type
 
-from .model import enum as aqe
-from .model import thing as aqt
+from pydantic import RootModel
+from pydantic_yaml import parse_yaml_file_as
+
+from smoothieaq.model import enum as aqe
+from smoothieaq.model import thing as aqt
 
 _objects: dict[any, dict[str, any]] = {}
 
@@ -27,6 +28,10 @@ def load() -> None:
 
 def get[T](type: Type[T], id: str) -> T:
     return _objects[type][id]
+
+
+def put[T](type: Type[T], id: str, object: T) -> None:
+    _objects[type][id] = object
 
 
 def get_all[T](type: Type[T]) -> list[T]:

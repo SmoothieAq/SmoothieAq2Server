@@ -1,12 +1,14 @@
 import copy
 
 from fastapi import APIRouter, HTTPException
+
 from ..driver.drivers import *
 from ..model import thing as aqt
 
 router = APIRouter(
     prefix="/drivers",
-    responses={404: {"description": "Not found"}}
+    responses={404: {"description": "Not found"}},
+    tags=["drivers"]
 )
 
 
@@ -34,3 +36,8 @@ async def get_driver(driver_id: str) -> aqt.Driver:
         return get_m_driver(driver_id)
     except KeyError:
         raise HTTPException(404, f"Driver {driver_id} not found")
+
+
+@router.put("/{driver_id}")
+async def put_driver(driver: aqt.Driver) -> None:
+    return put_m_driver(driver)

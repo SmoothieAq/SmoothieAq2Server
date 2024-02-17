@@ -2,8 +2,6 @@ import time
 from dataclasses import dataclass
 from typing import Optional, Callable
 
-import smoothieaq.device
-
 
 class Emit:
     pass
@@ -52,3 +50,18 @@ def emit_enum_value(id: str, enum_value: str, note=None) -> ObservableEmit:
         note=note,
         stamp=time.time()
     )
+
+
+def stamp_to_transport(stamp: float) -> int:
+    return int(stamp * 10)
+
+
+def emit_to_transport(emit: ObservableEmit) -> list[str]:
+    stamp = stamp_to_transport(emit.stamp)
+    value = None if emit.value is None else str(emit.value)
+    if emit.note:
+        return [emit.observable_id, stamp, value, emit.enumValue, emit.note]
+    elif emit.enumValue:
+        return [emit.observable_id, stamp, value, emit.enumValue]
+    else:
+        return [emit.observable_id, stamp, value]

@@ -1,12 +1,11 @@
 import statistics
 
 import psutil
-
 import reactivex as rx
 
-from .pollingdriver import PollingDriver
+from smoothieaq.div.emit import RawEmit
 from .driver import Status
-from ..emit import RawEmit
+from .pollingdriver import PollingDriver
 from ..model import thing as aqt
 
 
@@ -46,4 +45,3 @@ class PsutilDriver(PollingDriver):
             if average_temp:
                 self._rx_observers[self.rx_key_temp].on_next(
                     RawEmit(value=average_temp))
-

@@ -1,11 +1,6 @@
-import time
 from asyncio import sleep
 from typing import cast
 
-import reactivex
-
-import smoothieaq.model.thing as aqt
-import smoothieaq.objectstore as os
 import smoothieaq.model.expression as e
 from smoothieaq.device import devices as dv
 from smoothieaq.device.device import *
@@ -14,7 +9,7 @@ from smoothieaq.driver import drivers as dr
 
 async def test():
 
-    os.load()
+    #os.load()
 
     dv.rx_all_observables.subscribe(lambda e: print(
         f"{e.observable_id}: {e.value or ''}{e.enumValue or ''} {e.note or ''} ({time.strftime('%Y/%m/%d %H:%M:%S',time.localtime(e.stamp))}) {e.stamp}"

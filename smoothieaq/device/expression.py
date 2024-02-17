@@ -1,11 +1,10 @@
-import uuid
 from typing import Callable
 
 import reactivex as rx
 import reactivex.operators as op
 
+from smoothieaq.div.emit import RawEmit
 from . import devices as dv
-from ..emit import RawEmit
 from ..model import expression as aqe
 
 _unaries: dict[aqe.UnaryOp, Callable[[RawEmit], RawEmit]] = {
@@ -32,14 +31,14 @@ _binaries: dict[aqe.BinaryOp, Callable[[RawEmit, RawEmit], RawEmit]] = {
     aqe.BinaryOp.SUBTRACT: lambda e1, e2: RawEmit(value=e1.value - e2.value),
     aqe.BinaryOp.MULTIPLY: lambda e1, e2: RawEmit(value=e1.value * e2.value),
     aqe.BinaryOp.DIVIDE: lambda e1, e2: RawEmit(value=e1.value / e2.value), }
-_rxOps0: dict[aqe.RxOp0, Callable[[],Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
+_rxOps0: dict[aqe.RxOp0, Callable[[], Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
     aqe.RxOp0.DISTINCT: lambda: op.distinct_until_changed(comparer=lambda e1, e2: (
         e1.enumValue == e2.enumValue if e1.enumValue or e2.enumValue else (
                 (e1.value is None and e2.value is None) or abs(e1.value - e2.value) < 0.0001
         )
     ))
 }
-_rxOps1: dict[aqe.RxOp1, Callable[[float],Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
+_rxOps1: dict[aqe.RxOp1, Callable[[float], Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
     aqe.RxOp1.DEBOUNCE: lambda a: op.debounce(a),
     aqe.RxOp1.THROTTLE: lambda a: op.throttle_with_timeout(a)
 }
@@ -85,6 +84,7 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.Observab
                         #  log error
                         return rx.subject.BehaviorSubject(RawEmit())
                     return o
+
                 rx_observables[id] = rx.defer(get_observable)
 
     find(expr)

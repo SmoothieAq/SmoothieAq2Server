@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Optional
 
 import reactivex as rx
 
-from smoothieaq.emit import RawEmit
+from smoothieaq.div.emit import RawEmit
 from ..model import thing as aqt
 
 

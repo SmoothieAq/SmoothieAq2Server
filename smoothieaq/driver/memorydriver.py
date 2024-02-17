@@ -1,11 +1,8 @@
-import random
-from typing import Optional
-
 import reactivex as rx
 
+from smoothieaq.div.emit import RawEmit
 from .driver import Driver
 from .driver import Status
-from ..emit import RawEmit
 from ..model import thing as aqt
 
 
