@@ -3,9 +3,10 @@ from typing import Callable
 import reactivex as rx
 import reactivex.operators as op
 
-from smoothieaq.div.emit import RawEmit
+from ..div.emit import RawEmit
 from . import devices as dv
 from ..model import expression as aqe
+
 
 _unaries: dict[aqe.UnaryOp, Callable[[RawEmit], RawEmit]] = {
     aqe.UnaryOp.NOT: lambda e: RawEmit(value=0.0 if e.value else 1.0),
@@ -32,11 +33,11 @@ _binaries: dict[aqe.BinaryOp, Callable[[RawEmit, RawEmit], RawEmit]] = {
     aqe.BinaryOp.MULTIPLY: lambda e1, e2: RawEmit(value=e1.value * e2.value),
     aqe.BinaryOp.DIVIDE: lambda e1, e2: RawEmit(value=e1.value / e2.value), }
 _rxOps0: dict[aqe.RxOp0, Callable[[], Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
-    aqe.RxOp0.DISTINCT: lambda: op.distinct_until_changed(comparer=lambda e1, e2: (
-        e1.enumValue == e2.enumValue if e1.enumValue or e2.enumValue else (
-                (e1.value is None and e2.value is None) or abs(e1.value - e2.value) < 0.0001
-        )
-    ))
+    aqe.RxOp0.DISTINCT: lambda: op.distinct_until_changed(#comparer=lambda e1, e2: (
+        #e1.enumValue == e2.enumValue if e1.enumValue or e2.enumValue else (
+        #        (e1.value is None and e2.value is None) or abs(e1.value - e2.value) < 0.0001
+        #)
+    )#)
 }
 _rxOps1: dict[aqe.RxOp1, Callable[[float], Callable[[rx.Observable[RawEmit]], rx.Observable[RawEmit]]]] = {
     aqe.RxOp1.DEBOUNCE: lambda a: op.debounce(a),
@@ -75,14 +76,22 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.Observab
             if not expr._label:
                 expr._label = find_label(expr.op)
             rx_observables[expr._label] = as_observable(expr.expr, device_id).pipe(_rxOps1[expr.op](expr.arg))
+        elif isinstance(expr, aqe.OnExpr):
+            if not expr._label:
+                expr._label = find_label("on")
+            rx_observables[expr._label] = as_observable(expr.thenExpr, device_id).pipe(
+                op.sample(as_observable(expr.onExpr, device_id))
+            )
         elif isinstance(expr, aqe.ObservableExpr):
             id = expr.observableRef if expr.observableRef.find(":") > 0 else device_id + ":" + expr.observableRef
             if not rx_observables.__contains__(id):
                 def get_observable(s) -> rx.Observable[RawEmit]:
                     o = dv.get_rx_observable(id)
                     if not o:
-                        #  log error
-                        return rx.subject.BehaviorSubject(RawEmit())
+                        from .observable import log
+                        note = f"Could not find observable {id} used in expression on device {device_id}"
+                        log.error(note)
+                        return rx.subject.BehaviorSubject(RawEmit(note=note))
                     return o
 
                 rx_observables[id] = rx.defer(get_observable)
@@ -93,62 +102,73 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.Observab
 
 def evaluate(expr: aqe.Expr, vals: dict[str, RawEmit]) -> RawEmit:
     def eval(expr: aqe.Expr) -> RawEmit:
-        if isinstance(expr, aqe.UnaryOpExpr):
-            return _unaries[expr.op](eval(expr.expr))
-        elif isinstance(expr, aqe.BinaryOpExpr):
-            return _binaries[expr.op](eval(expr.expr1), eval(expr.expr2))
-        elif isinstance(expr, aqe.IfExpr):
-            return eval(expr.thenExpr) if eval(expr.ifExpr).value else eval(expr.elseExpr)
-        elif isinstance(expr, aqe.WhenExpr):
-            for when in expr.whens:
-                if eval(when.ifExpr).value:
-                    return eval(when.thenExpr)
-            return eval(expr.elseExpr)
-        elif isinstance(expr, aqe.RxOp0Expr):
-            return vals[expr._label]
-        elif isinstance(expr, aqe.RxOp1Expr):
-            return vals[expr._label]
-        elif isinstance(expr, aqe.ObservableExpr):
-            return vals[expr.observableRef]
-        elif isinstance(expr, aqe.EnumValueExpr):
-            return RawEmit(enumValue=expr.enumValue)
-        elif isinstance(expr, aqe.ValueExpr):
-            return RawEmit(value=expr.value)
-        else:
+        try:
+            if isinstance(expr, aqe.UnaryOpExpr):
+                return _unaries[expr.op](eval(expr.expr))
+            elif isinstance(expr, aqe.BinaryOpExpr):
+                return _binaries[expr.op](eval(expr.expr1), eval(expr.expr2))
+            elif isinstance(expr, aqe.IfExpr):
+                return eval(expr.thenExpr) if eval(expr.ifExpr).value else eval(expr.elseExpr)
+            elif isinstance(expr, aqe.WhenExpr):
+                for when in expr.whens:
+                    if eval(when.ifExpr).value:
+                        return eval(when.thenExpr)
+                return eval(expr.elseExpr)
+            elif isinstance(expr, aqe.RxOp0Expr):
+                return vals[expr._label]
+            elif isinstance(expr, aqe.RxOp1Expr):
+                return vals[expr._label]
+            elif isinstance(expr, aqe.ObservableExpr):
+                return vals[expr.observableRef]
+            elif isinstance(expr, aqe.EnumValueExpr):
+                return RawEmit(enumValue=expr.enumValue)
+            elif isinstance(expr, aqe.ValueExpr):
+                return RawEmit(value=expr.value)
+            else:
+                return RawEmit()
+        except Exception as e:
+#            from .observable import log
+#            log.error(f"Error evaluating {expr}", e)
             return RawEmit()
 
     return eval(expr)
 
 
 def as_observable(expr: aqe.Expr, device_id: str) -> rx.Observable[RawEmit]:
-    rx_observables = find_rx_observables(expr, device_id)
-    observable_ids = list(rx_observables.keys())
-    if isinstance(expr, aqe.RxOp0Expr):
-        return rx_observables[expr._label]
-    if isinstance(expr, aqe.RxOp1Expr):
-        return rx_observables[expr._label]
-    if isinstance(expr, aqe.ObservableExpr):
-        return rx_observables[expr.observableRef]
-    if len(rx_observables) == 0:
-        return rx.subject.BehaviorSubject(evaluate(expr, {}))
-    if len(rx_observables) == 1:
-        return rx_observables[observable_ids[0]].pipe(op.map(lambda e: evaluate(expr, {observable_ids[0]: e})))
-    if len(rx_observables) == 2:
-        return rx.combine_latest(rx_observables[observable_ids[0]], rx_observables[observable_ids[1]]).pipe(
-            op.map(lambda t: evaluate(expr, {observable_ids[0]: t[0], observable_ids[1]: t[1]})))
-    if len(rx_observables) == 3:
-        return rx.combine_latest(
-            rx_observables[observable_ids[0]], rx_observables[observable_ids[1]], rx_observables[observable_ids[2]]
-        ).pipe(op.map(
-            lambda t: evaluate(expr, {observable_ids[0]: t[0], observable_ids[1]: t[1], observable_ids[2]: t[2]}))
-        )
-    if len(rx_observables) == 4:
-        return rx.combine_latest(
-            rx_observables[observable_ids[0]], rx_observables[observable_ids[1]], rx_observables[observable_ids[2]],
-            rx_observables[observable_ids[3]]
-        ).pipe(
-            op.map(lambda t: evaluate(expr,
-                                      {observable_ids[0]: t[0], observable_ids[1]: t[1], observable_ids[2]: t[2],
-                                       observable_ids[3]: t[3]})))
-    #  log error
-    return rx.subject.BehaviorSubject(RawEmit())
+    try:
+        rx_observables = find_rx_observables(expr, device_id)
+        observable_ids = list(rx_observables.keys())
+        if isinstance(expr, aqe.RxOp0Expr):
+            return rx_observables[expr._label]
+        if isinstance(expr, aqe.RxOp1Expr):
+            return rx_observables[expr._label]
+        if isinstance(expr, aqe.ObservableExpr):
+            return rx_observables[expr.observableRef]
+        if len(rx_observables) == 0:
+            return rx.subject.BehaviorSubject(evaluate(expr, {}))
+        if len(rx_observables) == 1:
+            return rx_observables[observable_ids[0]].pipe(op.map(lambda e: evaluate(expr, {observable_ids[0]: e})))
+        if len(rx_observables) == 2:
+            return rx.combine_latest(rx_observables[observable_ids[0]], rx_observables[observable_ids[1]]).pipe(
+                op.map(lambda t: evaluate(expr, {observable_ids[0]: t[0], observable_ids[1]: t[1]})))
+        if len(rx_observables) == 3:
+            return rx.combine_latest(
+                rx_observables[observable_ids[0]], rx_observables[observable_ids[1]], rx_observables[observable_ids[2]]
+            ).pipe(op.map(
+                lambda t: evaluate(expr, {observable_ids[0]: t[0], observable_ids[1]: t[1], observable_ids[2]: t[2]}))
+            )
+        if len(rx_observables) == 4:
+            return rx.combine_latest(
+                rx_observables[observable_ids[0]], rx_observables[observable_ids[1]], rx_observables[observable_ids[2]],
+                rx_observables[observable_ids[3]]
+            ).pipe(
+                op.map(lambda t: evaluate(expr,
+                                          {observable_ids[0]: t[0], observable_ids[1]: t[1], observable_ids[2]: t[2],
+                                           observable_ids[3]: t[3]})))
+        from .observable import log
+        log.error(f"Too many observables ({rx_observables}) in expression on device {device_id}")
+        return rx.subject.BehaviorSubject(RawEmit())
+    except Exception as ex:
+        from .observable import log
+        log.error(f"Expression on {device_id}", ex)
+        return rx.subject.BehaviorSubject(RawEmit())

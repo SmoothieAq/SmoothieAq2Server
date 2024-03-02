@@ -1,8 +1,9 @@
 import importlib
 
-from smoothieaq.div import objectstore as os
-from smoothieaq.driver.driver import Driver
-from smoothieaq.model import thing as aqt
+from ..div import objectstore as os
+from .driver import Driver
+from ..model import thing as aqt
+from ..util.dataclassutil import overwrite
 
 
 def find_driver(m_driver_id: str) -> Driver:
@@ -19,7 +20,11 @@ def get_m_drivers() -> list[aqt.Driver]:
 
 
 def get_m_driver(id: str) -> aqt.Driver:
-    return os.get(aqt.Driver, id)
+    m_driver = os.get(aqt.Driver, id)
+    if m_driver.basedOnDriver:
+        m_based = get_m_driver(m_driver.basedOnDriver)
+        m_driver = overwrite(m_based, m_driver)
+    return m_driver
 
 
 def put_m_driver(m_driver: aqt.Driver) -> None:

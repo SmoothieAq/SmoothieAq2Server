@@ -1,3 +1,347 @@
+- id: TimeDriver
+  name: Time driver
+  description: |-
+    Emits the (simulated) time once a minute
+  canDiscover: true
+  canMultiInstance: false
+  canSingleObservable: false
+  templateDevice:
+    name: Time
+    type: time
+    driver:
+      id: TimeDriver
+      path: computer
+    operations:
+    observables:
+      - type: Event
+        id: A
+        name: Time
+        description: Time, emits a "tick" once a minute, time is in value
+        enumType: eventType
+        category: internal
+- id: LightDriver
+  name: Abstract generic simple light driver
+  description: |-
+    todo
+  canDiscover: false
+  canMultiInstance: true
+  canSingleObservable: false
+  paramDescriptions:
+    - id: LightDriver.p1
+      key: colorIds
+      defaultValue: W
+      description: |-
+        Must be W for the LightDriver
+    - id: LightDriver.p2
+      key: colors
+      defaultValue: FFFFFF
+  templateDevice:
+    name: Light
+    site: aquarium1
+    place: above
+    category: primary
+    type: light
+    driver:
+      id: -specialization-of-LightDriver-
+      path: -driver-dependant-
+      params:
+        - key: colorIds
+          value: W
+        - key: colors
+          value: FFFFFF
+    operations:
+    observables:
+      - type: State
+        id: A1
+        operations:
+          - set
+        name: OnOff
+        description: Light on or off
+        enumType: onOff
+        category: internal
+      - type: Amount
+        id: A2
+        operations:
+          - set
+        name: maxLumen
+        description: Maximum lumen
+        quantityType: luminousFlux.lm
+        category: parameter
+      - type: Amount
+        id: A3
+        operations:
+        name: lumen
+        description: Current lumen (luminous flux)
+        quantityType: luminousFlux.lm
+        category: primary
+        expr:
+          type: IfExpr
+          ifExpr:
+            type: BinaryOpExpr
+            expr1:
+              type: ObservableExpr
+              observableRef: A1
+            op: eq
+            expr2:
+              type: EnumValueExpr
+              enumValue: on
+          thenExpr:
+            type: ObservableExpr
+            observableRef: A2
+          elseExpr:
+            type: ValueExpr
+            value: 0.0
+      - type: Amount
+        id: A4
+        operations:
+        name: lightDay
+        description: Amount of light this day, reset at midnight.
+        quantityType: luminousFlux.klmh
+        category: secondary
+        resetValue:
+          type: ValueExpr
+          value: 0.0
+        addExpr:
+          type: OnExpr
+          onExpr:
+            type: ObservableExpr
+            observableRef: ">time:A"
+          thenExpr:
+            type: BinaryOpExpr
+            exp1:
+              type: ObservableExpr
+              observableRef: A3
+            op: divide
+            exp2:
+              type: ValueExpr
+              value: 60000.
+- id: LedDriver
+  name: Abstract generic LED driver
+  description: |-
+    todo
+  basedOnDriver: LightDriver
+  templateDevice:
+    observables:
+      - type: Amount
+        id: A5
+        operations:
+          - set
+        name: Brightness
+        description: Brightness
+        quantityType: fraction.%
+        category: internal
+      - type: Amount
+        id: A3
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: A2
+          op: multiply
+          expr2:
+            type: ConvertExpr
+            expr:
+              type: ObservableExpr
+              observableRef: A5
+            quantity: fraction
+            fromUnit: "%"
+            toUnit: _fraction
+- id: Led2Driver
+  name: Abstract generic 2 LED driver
+  description: |-
+    todo
+  basedOnDriver: LedDriver
+  paramDescriptions:
+    - id: LightDriver.p1
+      key: colorIds
+      defaultValue: "R:G"
+      description: |-
+        Two letters separated by colon (:). You can use any letters except A. There must be observables
+        x1, x2 and x3 for each of the two letters.
+    - id: LightDriver.p2
+      key: colors
+      defaultValue: "CC3388:33CC88"
+      description: |-
+        hex values of the brightest rgb colors of each led color.
+        hex EE1188:11EE88 equals the fractions 0.80R/0.20G/0.53B:0.20R/0.80G/0.53B.
+        The rgb sum of the different led colors should equal the color of the light when all leds are on max,
+        here it is FFFFFF:FFFFFF which is bright white (which might not be the best choice).
+        
+        We use perceived brightness (luminous flux) to be 0.21R + 0.72G + 0.07B.
+        That means the max luminous flux of the leds of the first led color is:
+        (0.80 * 0.21 + 0.20 * 0.72 + 0.53 * 0.07) * maxTotalLumen = 0.35 * maxTotalLumen
+
+        For the second led color it is:
+        (0.20 * 0.21 + 0.80 * 0.72 + 0.53 * 0.07) * maxTotalLumen = 0.65 * maxTotalLumen
+        
+        Note, that none of this needs to be very precise!
+  templateDevice:
+    driver:
+      params:
+        - key: colorIds
+          value: "R:G"
+        - key: colors
+          value: "CC3388:33CC88"
+    observables:
+      - type: Amount
+        id: R1
+        operations:
+        name: Max lumen R
+        description: Maximum lumen for Red color leds
+        quantityType: luminousFlux.lm
+        category: internal
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: A2
+          op: multiply
+          expr2:
+            type: ValueExpr
+            value: 0.35
+      - type: Amount
+        id: R2
+        operations:
+          - set
+        name: Brightness R
+        description: Brightness for Red color leds
+        quantityType: fraction.%
+        category: internal
+      - type: Amount
+        id: R3
+        name: lumen
+        description: Current lumen (luminous flux) for Red color leds
+        quantityType: luminousFlux.lm
+        category: internal
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: R1
+          op: multiply
+          expr2:
+            type: ConvertExpr
+            expr:
+              type: ObservableExpr
+              observableRef: R2
+            quantity: fraction
+            fromUnit: "%"
+            toUnit: _fraction
+      - type: Amount
+        id: G1
+        operations:
+        name: Max lumen G
+        description: Maximum lumen for Green color leds
+        quantityType: luminousFlux.lm
+        category: internal
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: A2
+          op: multiply
+          expr2:
+            type: ValueExpr
+            value: 0.65
+      - type: Amount
+        id: G2
+        operations:
+          - set
+        name: Brightness G
+        description: Brightness for Green color leds
+        quantityType: fraction.%
+        category: internal
+      - type: Amount
+        id: G3
+        name: lumen
+        description: Current lumen (luminous flux) for Green color leds
+        quantityType: luminousFlux.lm
+        category: internal
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: G1
+          op: multiply
+          expr2:
+            type: ConvertExpr
+            expr:
+              type: ObservableExpr
+              observableRef: G2
+            quantity: fraction
+            fromUnit: "%"
+            toUnit: _fraction
+      - type: Amount
+        id: A3
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: R3
+          op: multiply
+          expr2:
+            type: ObservableExpr
+            observableRef: G3
+      - type: Amount
+        id: A5
+        operations:
+          - set
+        expr:
+          type: BinaryOpExpr
+          expr1:
+            type: ObservableExpr
+            observableRef: A3
+          op: divide
+          expr2:
+            type: ObservableExpr
+            observableRef: A2
+- id: Chihiros2LedDriver
+  name: Chihiros 2 LED driver
+  description: |-
+    A driver based on code from https://github.com/TheMicDiet/chihiros-led-control.
+    Read there for support for different Chihiros LED devices.
+    
+    Path should be the BLE address of the LED.
+  canDiscover: true
+  canMultiInstance: true
+  canSingleObservable: false
+  paramDescriptions:
+    - id: ChihirosLedDriver.p1
+      key: colorIds
+      defaultValue: "W"
+      description: |-
+        A list of the colors of LED on the device, common ones are "W", "RGB", "RGBW" and "RG".
+  templateDevice:
+    name: Chihiros LED
+    site: aquarium1
+    place: above
+    category: primary
+    type: light
+    driver:
+      id: ChihirosLedDriver
+      path: -fill-with-ble-uuid-
+      params:
+        - key: colorIds
+          value: "W"
+    operations:
+    observables:
+      - type: State
+        id: A
+        operations:
+          - set
+        name: OnOff
+        description: LED on or off
+        enumType: onOff
+        category: internal
+      - type: Amount
+        id: W1
+        operations:
+          - set
+        name: Brightness
+        description: Brightness
+        quantityType: fraction.%
+        precision: 1
+        category: internal
 - id: PsutilDriver
   name: Computer driver
   description: |-
@@ -19,7 +363,7 @@
   paramDescriptions:
     - id: PsutilDriver.p1
       key: pollEverySeconds
-      defaultValue: "10"
+      defaultValue: "30"
       description: |-
         Specifies how often the driver should poll for new measures.
         Don't poll too often, as it will emit many measures.
@@ -35,10 +379,13 @@
       path: computer
       params:
         - key: pollEverySeconds
-          value: "10"
+          value: "30"
+    operations:
+      - poll
     observables:
       - type: Measure
         id: A
+        operations:
         name: CPU load
         description: CPU load percentage
         quantityType: fraction.%
@@ -47,8 +394,8 @@
           decimals: 1
           supressSameLimit: 0.5
         require:
-          warningNotBelow: 75
-          isBelow: 90
+          warningAbove: 75
+          alarmAbove: 90
       - type: Measure
         id: B
         name: CPU temperature
@@ -58,8 +405,8 @@
         emitControl:
           decimals: 0
         require:
-          warningNotBelow: 90
-          isBelow: 110
+          warningAbove: 90
+          alarmAbove: 110
 - id: DummyDriver
   name: Dummy driver
   description: |-
@@ -70,7 +417,7 @@
   paramDescriptions:
     - id: DummyDriver.p1
       key: pollEverySeconds
-      defaultValue: "10"
+      defaultValue: "30"
       description: |-
         Specifies how often the driver should poll for new measures.
         Don't poll too often, as it will emit many measures.
@@ -90,11 +437,13 @@
       id: DummyDriver
       params:
         - key: pollEverySeconds
-          value: "10"
+          value: "30"
         - key: generateGaussMu
           value: "24"
         - key: generateGaussSigma
           value: "15"
+    operations:
+      - poll
     observables:
       - type: Measure
         id: A
@@ -117,10 +466,10 @@
   canDiscover: false
   canMultiInstance: true
   canSingleObservable: true
+  basedOnDriver: MemoryDriver
   templateDevice:
-    name: MEMORY
-    driver:
-      id: MemoryDriver
+    operations:
+      - measure
     observables:
       - type: Measure
         id: A
@@ -132,10 +481,26 @@
   canDiscover: false
   canMultiInstance: true
   canSingleObservable: true
+  basedOnDriver: MemoryDriver
   templateDevice:
-    name: MEMORY
-    driver:
-      id: MemoryDriver
+    operations:
+      - set
+    observables:
+      - type: State
+        id: A
+        name: Memory
+- id: MemoryAmountDriver
+  name: Memory amount driver
+  description: |-
+    todo.
+  canDiscover: false
+  canMultiInstance: true
+  canSingleObservable: true
+  basedOnDriver: MemoryDriver
+  templateDevice:
+    operations:
+      - set
+      - add
     observables:
       - type: State
         id: A

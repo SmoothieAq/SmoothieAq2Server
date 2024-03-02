@@ -1,0 +1,8 @@
+pydantic~=2.6.1
+pydantic_yaml~=1.2.1
+reactivex~=4.0.4
+typing_extensions~=4.9.0
+bleak~=0.21.1
+psutil~=5.9.8
+orjson~=3.9.15
+fastapi~=0.110.0

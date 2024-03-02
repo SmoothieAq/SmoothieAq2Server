@@ -16,6 +16,7 @@ class Device:
         self.rx_all_observables: Optional[rx.Observable[ObservableEmit]] = None
 
     def pause(self, paused: bool = True) -> None:
+        assert self.m_device.enabled is not False
         self.paused = paused
         self._rx_paused.on_next(paused)
         for o in self.observables.values():
@@ -29,14 +30,14 @@ class Device:
         self.pause(False)
 
     def init(self, m_device: aqt.Device) -> 'Device':
-        self.m_device: aqt.Device = m_device
-        self.id: str = m_device.id
+        self.m_device = m_device
+        self.id = m_device.id
         self.status_id = self.id + '?'
 
         if self.m_device.enabled is not False:
             s: rx.Observable[RawEmit]
             if m_device.driver and m_device.driver.id:
-                self.driver = driver_init(m_device.driver)
+                self.driver = driver_init(m_device.driver, self.id)
                 s = self.driver.rx_status_observable
             else:
                 s = rx.of(RawEmit(enumValue=DriverStatus.RUNNING))
@@ -97,6 +98,10 @@ class Device:
             o.stop()
         if self.driver:
             self.driver.stop()
+
+    def poll(self) -> None:
+        assert self.m_device.enabled is not False
+        self.driver.poll()
 
     def close(self) -> None:
         for o in self.observables.values():

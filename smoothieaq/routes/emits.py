@@ -21,6 +21,7 @@ async def websocket_emits(websocket: WebSocket):
         rx_emits = devices.rx_all_observables.pipe(
             op.map(emit_to_transport),
             op.buffer_with_time_or_count(2, 5),
+            op.filter(lambda l: len(l) > 0),
             op.map(orjson.dumps)
         )
         async for e in generator(rx_emits):

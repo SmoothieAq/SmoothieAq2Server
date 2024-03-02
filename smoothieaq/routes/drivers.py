@@ -1,6 +1,7 @@
 import copy
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 
 from ..driver.drivers import *
 from ..model import thing as aqt
@@ -31,7 +32,11 @@ async def get_drivers() -> list[aqt.Driver]:
 
 
 @router.get("/{driver_id}")
-async def get_driver(driver_id: str) -> aqt.Driver:
+async def get_driver(
+        driver_id: str,
+        accept_language: Annotated[str | None, Header()] = None
+) -> aqt.Driver:
+    print("***", accept_language)
     try:
         return get_m_driver(driver_id)
     except KeyError:

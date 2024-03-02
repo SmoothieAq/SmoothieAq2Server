@@ -1,5 +1,5 @@
 import asyncio
-from typing import Generator
+from typing import Generator, Callable
 
 import reactivex as rx
 from reactivex import operators as op
@@ -32,3 +32,10 @@ async def generator[T](obs: rx.Observable[T], loop=asyncio.get_event_loop()) -> 
     finally:
         if disposable:
             disposable.dispose()
+
+
+def only_first[T](obs: rx.Observable[T], do: Callable[[T], None]) -> None:
+    def do_it(t: T) -> None:
+        do(t)
+        disposable.dispose()
+    disposable = obs.pipe(op.first()).subscribe(do_it)

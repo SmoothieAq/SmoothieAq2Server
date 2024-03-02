@@ -18,6 +18,7 @@ def _load_type(type: Type, file: str) -> None:
 def load() -> None:
     _load_type(aqe.Enum, "enums")
     _load_type(aqt.Driver, "drivers")
+    _load_type(aqt.EmitDriver, "emitdrivers")
 
     # enums: list[aqe.Enum] = parse_yaml_file_as(RootModel[list[aqe.Enum]], "resources/enums.yaml").root
     # objects[aqe.Enum] = dict(map(lambda e: (e.id, e), enums))

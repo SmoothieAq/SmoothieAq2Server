@@ -4,7 +4,7 @@ from typing import Optional
 import reactivex as rx
 
 from smoothieaq.div.emit import RawEmit
-from .driver import Status
+from .driver import Status, log
 from .pollingdriver import PollingDriver
 from ..model import thing as aqt
 
@@ -33,5 +33,7 @@ class DummyDriver(PollingDriver):
         self._status(Status.RUNNING)
 
     def poll(self) -> None:
-        self._rx_observers[self.rx_key].on_next(
-            RawEmit(value=random.gauss(self.generateGaussMu, self.generateGaussSigma)))
+        log.debug(f"doing driver.poll({self.id}/{self.path})")
+        emit = RawEmit(value=random.gauss(self.generateGaussMu, self.generateGaussSigma))
+        log.debug(f"doing driver.emit({self.id}/{self.path}, {self.rx_key}, {emit})")
+        self._rx_observers[self.rx_key].on_next(emit)

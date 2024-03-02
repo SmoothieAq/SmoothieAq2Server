@@ -1,3 +1,4 @@
+import logging
 import statistics
 
 import psutil
@@ -9,6 +10,9 @@ from .pollingdriver import PollingDriver
 from ..model import thing as aqt
 
 
+log = logging.getLogger(__name__)
+
+
 class PsutilDriver(PollingDriver):
     id = "PsutilDriver"
     rx_key_percent: str = 'A'
@@ -17,7 +21,7 @@ class PsutilDriver(PollingDriver):
     def __init__(self, m_driver: aqt.Driver):
         super().__init__(m_driver)
 
-    def find_device_paths(self) -> list[str]:
+    def discover_device_paths(self) -> list[str]:
         return ["computer"]
 
     def _set_subjects(self) -> dict[str, rx.subject.Subject]:
@@ -34,8 +38,9 @@ class PsutilDriver(PollingDriver):
 
         percent = psutil.cpu_percent()
         if percent:
-            self._rx_observers[self.rx_key_percent].on_next(
-                RawEmit(value=percent))
+            emit = RawEmit(value=percent)
+            log.debug(f"doing psutil.emit({self.id}/{self.path}, {self.rx_key_percent}, {emit})")
+            self._rx_observers[self.rx_key_percent].on_next(emit)
 
         if hasattr(psutil, "sensors_temperatures"):
             temps = psutil.sensors_temperatures()
@@ -43,5 +48,6 @@ class PsutilDriver(PollingDriver):
             core = temps['coretemp'] or []
             average_temp = statistics.mean(map(lambda s: s["current"], core))
             if average_temp:
-                self._rx_observers[self.rx_key_temp].on_next(
-                    RawEmit(value=average_temp))
+                emit = RawEmit(value=average_temp)
+                log.debug(f"doing psutil.emit({self.id}/{self.path}, {self.rx_key_temp}, {emit})")
+                self._rx_observers[self.rx_key_temp].on_next(emit)

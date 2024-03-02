@@ -4,8 +4,9 @@ import reactivex as rx
 from reactivex import operators as op
 from reactivex.disposable import Disposable
 
-from smoothieaq.driver.driver import Driver
+from .driver import Driver, log
 from ..model import thing as aqt
+from ..div import time
 
 
 class PollingDriver(Driver):
@@ -22,8 +23,12 @@ class PollingDriver(Driver):
 
     def start(self) -> None:
         super().start()
+        duration = time.duration(self.pollEverySeconds)
+        log.debug(f"doing driver.pollingEvery({self.id}/{self.path}, {duration})")
         self.polling_disposable = (
-            rx.interval(self.pollEverySeconds).pipe(op.delay_subscription(0.5)).subscribe(lambda n: self.poll())
+            rx.interval(duration)
+            .pipe(op.delay_subscription(0.5))
+            .subscribe(lambda n: self.poll())
         )
 
     def stop(self) -> None:

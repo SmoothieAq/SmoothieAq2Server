@@ -110,6 +110,14 @@ class WhenExpr(AbstractExpr):
 
 
 @dataclass
+class OnExpr(AbstractExpr):
+    onExpr: 'Expr'
+    thenExpr: 'Expr'
+    type: Literal['OnExpr'] = 'OnExpr'
+    _label: Optional[str] = None
+
+
+@dataclass
 class ObservableExpr(AbstractExpr):
     observableRef: str
     type: Literal['ObservableExpr'] = 'ObservableExpr'
@@ -128,9 +136,18 @@ class ValueExpr(AbstractExpr):
 
 
 @dataclass
+class ConvertExpr(AbstractExpr):
+    expr: 'Expr'
+    quantity: str
+    fromUnit: str
+    toUnit: str
+    type: Literal['ConvertExpr'] = 'ConvertExpr'
+
+
+@dataclass
 class NoneExpr(AbstractExpr):
     type: Literal['NoneExpr'] = 'NoneExpr'
 
 
-Expr = Annotated[(UnaryOpExpr | BinaryOpExpr | RxOp0Expr | RxOp1Expr | IfExpr | WhenExpr | ObservableExpr |
-                  EnumValueExpr | ValueExpr | NoneExpr), Field(discriminator='type')]
+Expr = Annotated[(UnaryOpExpr | BinaryOpExpr | RxOp0Expr | RxOp1Expr | IfExpr | WhenExpr | OnExpr | ObservableExpr |
+                  EnumValueExpr | ValueExpr | ConvertExpr | NoneExpr), Field(discriminator='type')]

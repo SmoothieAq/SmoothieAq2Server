@@ -1,4 +1,4 @@
-import time
+from ..div import time
 from dataclasses import dataclass
 from typing import Optional, Callable
 
@@ -26,6 +26,14 @@ def emit_raw(id: str, raw_emit: RawEmit) -> ObservableEmit:
         value=raw_emit.value,
         enumValue=raw_emit.enumValue,
         note=raw_emit.note,
+        stamp=time.time()
+    )
+
+
+def emit_empty(id: str) -> ObservableEmit:
+    return ObservableEmit(
+        observable_id=id,
+        note="Empty default",
         stamp=time.time()
     )
 

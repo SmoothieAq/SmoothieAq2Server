@@ -7,6 +7,9 @@ import asyncio
 from smoothieaq.enumtest import *
 from smoothieaq.rxtest import *
 from smoothieaq.devtest import *
+from smoothieaq.bletest import *
+from smoothieaq.div import objectstore as os, time as t
+import logging
 
 
 def print_hi(name):
@@ -14,11 +17,22 @@ def print_hi(name):
     print(f'Hi, {name}', float(True), float(False))  # Press ⌘F8 to toggle the breakpoint.
 
 
+async def doit():
+    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
+    logging.info("info")
+    os.load()
+    await sleep(1)
+    t.simulate(speed=10)
+    await test()
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # print(enum_test())
     #asyncio.run(rxtest())
-    asyncio.run(test())
+    asyncio.run(doit())
+    #asyncio.run(bletest())
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

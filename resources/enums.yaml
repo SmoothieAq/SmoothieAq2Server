@@ -1,4 +1,12 @@
 - type: EnumSimple
+  id: eventType
+  name: Generic event type
+  description:
+  values:
+    - type: EnumValueSimple
+      id: tick
+      name: Tick
+- type: EnumSimple
   id: operation
   name: Observable operation
   description:
@@ -21,6 +29,44 @@
     - type: EnumValueSimple
       id: fire
       name: Fire event
+    - type: EnumValueSimple
+      id: calibrate
+      name: Calibrate
+- type: EnumSimple
+  id: emitOperation
+  name: Emit device operation
+  description:
+  values:
+    - type: EnumValueSimple
+      id: emit
+      name: Emit
+    - type: EnumValueSimple
+      id: backup
+      name: Backup
+    - type: EnumValueSimple
+      id: backups
+      name: Backups
+    - type: EnumValueSimple
+      id: restore
+      name: Restore
+    - type: EnumValueSimple
+      id: latest
+      name: Latest
+    - type: EnumValueSimple
+      id: nightly
+      name: Nightly
+    - type: EnumValueSimple
+      id: emits
+      name: Emits
+    - type: EnumValueSimple
+      id: aggregates
+      name: Aggregates
+    - type: EnumValueSimple
+      id: export
+      name: Export
+    - type: EnumValueSimple
+      id: import
+      name: Import
 - type: EnumSimple
   id: boolean
   name: Boolean
@@ -32,6 +78,17 @@
     - type: EnumValueSimple
       id: "false"
       name: Is false
+- type: EnumSimple
+  id: onOff
+  name: On Off
+  description:
+  values:
+    - type: EnumValueSimple
+      id: on
+      name: Is on
+    - type: EnumValueSimple
+      id: off
+      name: Is off
 - type: EnumSimple
   id: place
   name: Place
@@ -74,6 +131,26 @@
     - type: EnumValueSimple
       id: computer
       name: Computer
+    - type: EnumValueSimple
+      id: light
+      name: Light
+    - type: EnumValueSimple
+      id: time
+      name: Time
+- type: EnumSimple
+  id: emitDeviceType
+  name: Type of emit device
+  description:
+  values:
+    - type: EnumValueSimple
+      id: internal
+      name: Internal
+    - type: EnumValueSimple
+      id: external
+      name: External
+    - type: EnumValueSimple
+      id: notification
+      name: Notification
 - type: EnumSimple
   id: category
   name: Category
@@ -90,6 +167,9 @@
     - type: EnumValueSimple
       id: internal
       name: Internal
+    - type: EnumValueSimple
+      id: param
+      name: Parameter
 - type: QuantityType
   id: length
   name: Length
@@ -121,3 +201,22 @@
     - type: Unit
       id: "°C"
       name: degrees Celsius
+- type: QuantityType
+  id: luminousFlux
+  name: Luminosity
+  values:
+    - type: Unit
+      id: lm
+      name: lumen
+- type: QuantityType
+  id: luminousEnergy
+  name: Luminous energy
+  values:
+    - type: Unit
+      id: lms
+      name: lumen second
+    - type: Unit
+      id: klmh
+      name: 1000 lumen hour
+      relTimes: 3600000
+      relUnit: lms

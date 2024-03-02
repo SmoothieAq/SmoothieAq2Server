@@ -1,0 +1,12 @@
+- id: LogEmitDriver
+  name: Log emit driver
+  description: |-
+    Logs emits with logging.getLogger("LogDriver").info()
+  templateDevice:
+    id: LogEmitDriver
+    type: external
+    driver:
+      id: LogEmitDriver
+    operations:
+      - emit
+    enabled: false

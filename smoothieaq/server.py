@@ -1,13 +1,17 @@
+import locale
+import os
+from _locale import LC_ALL, LC_MESSAGES
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import drivers, emits, tests
-from .div import objectstore as os
+from .div import objectstore as ostore
 from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    os.load()
+    ostore.load()
     yield
 
 
