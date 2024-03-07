@@ -19,9 +19,10 @@ def print_hi(name):
 
 async def doit():
     logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger("smoothieaq").setLevel(logging.INFO)
     logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
     logging.info("info")
-    os.load()
+    await os.load()
     await sleep(1)
     t.simulate(speed=10)
     await test()
@@ -33,6 +34,8 @@ if __name__ == '__main__':
     #asyncio.run(rxtest())
     asyncio.run(doit())
     #asyncio.run(bletest())
+#    from smoothieaq.util.rxutil import _distinct_until_changed_test
+#    asyncio.run(_distinct_until_changed_test())
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

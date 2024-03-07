@@ -19,17 +19,16 @@ class EmitDriver:
     def create_m_device(self) -> aqt.EmitDevice:
         return self.m_driver.templateDevice
 
-
     def _init(self):
         pass
 
-    def init(self, path: str, params: dict[str, str]) -> 'EmitDriver':
+    async def init(self, path: str, params: dict[str, str]) -> 'EmitDriver':
         log.info(f"doing emitDriver.init({self.id}/{path})")
         self.path = path
         self.params = params
         self._init()
         return self
 
-    def emit(self, e: ObservableEmit) -> None:
+    async def emit(self, emits: list[ObservableEmit]) -> None:
         log.error("emit() not implemented")
         raise Exception("emit() not implemented")

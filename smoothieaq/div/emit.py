@@ -39,7 +39,11 @@ def emit_empty(id: str) -> ObservableEmit:
 
 
 def emit_raw_fun(id: str) -> Callable[[RawEmit], ObservableEmit]:
-    return lambda e: emit_raw(id, e)
+
+    def _emit_raw_fun(e):
+        # print("raw", id, e)
+        return emit_raw(id, e)
+    return _emit_raw_fun
 
 
 def emit_value(id: str, value: float, note=None) -> ObservableEmit:

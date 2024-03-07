@@ -1,4 +1,12 @@
-from .observable import *
+from typing import Optional
+
+import aioreactive as rx
+
+from .observable import Observable, driver_init, Status, Measure, Amount, State, Event
+from ..div.emit import ObservableEmit, RawEmit, emit_enum_value
+from ..driver.driver import Driver, Status as DriverStatus
+from ..model import thing as aqt
+from ..util.rxutil import AsyncBehaviorSubject
 
 
 class Device:
@@ -8,26 +16,26 @@ class Device:
         self.id: Optional[str] = None
         self.status_id: Optional[str] = None
         self.driver: Optional[Driver] = None
-        self.rx_status_observable: Optional[rx.Observable[ObservableEmit]] = None
+        self.rx_status_observable: Optional[rx.AsyncObservable[ObservableEmit]] = None
         self.observables: Optional[dict[str, Observable]] = None
         self.paused: bool = False
-        self._rx_paused = rx.subject.BehaviorSubject[bool](self.paused)
-        self._rx_all_subject = rx.Subject[rx.Observable[ObservableEmit]]()
-        self.rx_all_observables: Optional[rx.Observable[ObservableEmit]] = None
+        self._rx_paused = AsyncBehaviorSubject[bool](self.paused)
+        self._rx_all_subject = rx.AsyncSubject[rx.AsyncObservable[ObservableEmit]]()
+        self.rx_all_observables: Optional[rx.AsyncObservable[ObservableEmit]] = None
 
-    def pause(self, paused: bool = True) -> None:
+    async def pause(self, paused: bool = True) -> None:
         assert self.m_device.enabled is not False
         self.paused = paused
-        self._rx_paused.on_next(paused)
+        await self._rx_paused.asend(paused)
         for o in self.observables.values():
-            o.pause(paused)
+            await o.pause(paused)
         if paused:
-            self.stop()
+            await self.stop()
         else:
-            self.start()
+            await self.start()
 
-    def unpause(self) -> None:
-        self.pause(False)
+    async def unpause(self) -> None:
+        await self.pause(False)
 
     def init(self, m_device: aqt.Device) -> 'Device':
         self.m_device = m_device
@@ -35,32 +43,35 @@ class Device:
         self.status_id = self.id + '?'
 
         if self.m_device.enabled is not False:
-            s: rx.Observable[RawEmit]
+            s: rx.AsyncObservable[RawEmit]
             if m_device.driver and m_device.driver.id:
                 self.driver = driver_init(m_device.driver, self.id)
                 s = self.driver.rx_status_observable
             else:
-                s = rx.of(RawEmit(enumValue=DriverStatus.RUNNING))
+                s = AsyncBehaviorSubject(RawEmit(enumValue=DriverStatus.RUNNING))
 
-            def status(t: tuple[bool, RawEmit]) -> ObservableEmit:
+            def status(t: tuple[bool, RawEmit]) -> Status:
                 (paused, driver_status) = t
                 # print("dev stat",self.id, paused,driver_status)
                 if paused:
-                    return emit_enum_value(self.status_id, Status.PAUSED)
+                    return Status.PAUSED
                 elif driver_status.enumValue in {DriverStatus.RUNNING, DriverStatus.PROGRAM_RUNNING,
                                                  DriverStatus.SCHEDULE_RUNNING}:
-                    return emit_enum_value(self.status_id, Status.RUNNING)
+                    return Status.RUNNING
                 elif driver_status.enumValue in {DriverStatus.IN_ERROR, DriverStatus.CLOSING}:
-                    return emit_enum_value(self.status_id, Status.ERROR)
+                    return Status.ERROR
                 else:
-                    return emit_enum_value(self.status_id, Status.INITIALIZING)
+                    return Status.INITIALIZING
 
-            self.rx_status_observable = rx.combine_latest(self._rx_paused, s).pipe(
-                op.map(status),
-                op.distinct_until_changed(lambda e: e.enumValue)
+            self.rx_status_observable = rx.pipe(
+                self._rx_paused,
+                rx.combine_latest(s),
+                rx.map(status),
+                rx.distinct_until_changed,
+                rx.map(lambda s: emit_enum_value(id=self.status_id, enum_value=s))
             )
         else:
-            self.rx_status_observable = rx.of(emit_enum_value(self.status_id, Status.DISABLED))
+            self.rx_status_observable = AsyncBehaviorSubject(emit_enum_value(self.status_id, Status.DISABLED))
 
         def create_observable(mo: aqt.Observable) -> tuple[str, Observable]:
             o: Observable
@@ -73,37 +84,38 @@ class Device:
             elif isinstance(mo, aqt.Event):
                 o = Event()
             else:
-                raise Exception("")
+                raise Exception(f"Unknown type of Observable {type(mo)}")
             return mo.id, o.init(mo, self)
 
         self.observables = dict(map(create_observable, m_device.observables or []))
 
-        self.rx_all_observables = rx.from_list(([self.rx_status_observable] +
-                                                [o for ob in self.observables.values() for o in
-                                                 [ob.rx_observable, ob.rx_status_observable]])).pipe(
-            op.merge_all()
+        self.rx_all_observables = rx.pipe(
+            rx.from_iterable(([self.rx_status_observable] +
+                              [o for ob in self.observables.values() for o in
+                                [ob.rx_observable, ob.rx_status_observable]])),
+            rx.merge_inner()
         )
 
         return self
 
-    def start(self) -> None:
+    async def start(self) -> None:
         assert self.m_device.enabled is not False
         if self.driver:
-            self.driver.start()
+            await self.driver.start()
         for o in self.observables.values():
-            o.start()
+            await o.start()
 
-    def stop(self) -> None:
+    async def stop(self) -> None:
         for o in self.observables.values():
-            o.stop()
+            await o.stop()
         if self.driver:
-            self.driver.stop()
+            await self.driver.stop()
 
-    def poll(self) -> None:
+    async def poll(self) -> None:
         assert self.m_device.enabled is not False
         self.driver.poll()
 
-    def close(self) -> None:
+    async def close(self) -> None:
         for o in self.observables.values():
-            o.close()
-        self._rx_paused.on_completed()
+            await o.close()
+        await self._rx_paused.aclose()

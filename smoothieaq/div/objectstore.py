@@ -2,29 +2,25 @@ from typing import Type
 
 from pydantic import RootModel
 from pydantic_yaml import parse_yaml_file_as
+from expression.collections.seq import Seq
 
 from smoothieaq.model import enum as aqe
 from smoothieaq.model import thing as aqt
+from smoothieaq.util.rxutil import ix
 
 _objects: dict[any, dict[str, any]] = {}
 
 
-def _load_type(type: Type, file: str) -> None:
+async def _load_type(type: Type, file: str) -> None:
     all: list[type] = parse_yaml_file_as(RootModel[list[type]], f"resources/{file}.yaml").root
     print("loaded", len(all), type)
-    _objects[type] = dict(map(lambda e: (e.id, e), all))
+    _objects[type] = dict(ix(all).map(lambda e: (e.id, e)))
 
 
-def load() -> None:
-    _load_type(aqe.Enum, "enums")
-    _load_type(aqt.Driver, "drivers")
-    _load_type(aqt.EmitDriver, "emitdrivers")
-
-    # enums: list[aqe.Enum] = parse_yaml_file_as(RootModel[list[aqe.Enum]], "resources/enums.yaml").root
-    # objects[aqe.Enum] = dict(map(lambda e: (e.id, e), enums))
-    #
-    # drivers: list[aqt.Driver] = parse_yaml_file_as(RootModel[list[aqe.Enum]], "resources/drivers.yaml").root
-    # objects[aqt.Driver] = dict(map(lambda e: (e.id, e), drivers))
+async def load() -> None:
+    await _load_type(aqe.Enum, "enums")
+    await _load_type(aqt.Driver, "drivers")
+    await _load_type(aqt.EmitDriver, "emitdrivers")
 
 
 def get[T](type: Type[T], id: str) -> T:
@@ -35,5 +31,5 @@ def put[T](type: Type[T], id: str, object: T) -> None:
     _objects[type][id] = object
 
 
-def get_all[T](type: Type[T]) -> list[T]:
-    return list(_objects[type].values())
+def get_all[T](type: Type[T]) -> Seq[T]:
+    return ix(_objects[type].values())

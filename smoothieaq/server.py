@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ostore.load()
+    await ostore.load()
     yield
 
 

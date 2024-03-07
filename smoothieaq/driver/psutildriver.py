@@ -2,7 +2,7 @@ import logging
 import statistics
 
 import psutil
-import reactivex as rx
+import aioreactive as rx
 
 from smoothieaq.div.emit import RawEmit
 from .driver import Status
@@ -24,23 +24,23 @@ class PsutilDriver(PollingDriver):
     def discover_device_paths(self) -> list[str]:
         return ["computer"]
 
-    def _set_subjects(self) -> dict[str, rx.subject.Subject]:
-        return {self.rx_key_percent: rx.Subject[RawEmit](), self.rx_key_temp: rx.Subject[RawEmit]()}
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {self.rx_key_percent: rx.AsyncSubject[RawEmit](), self.rx_key_temp: rx.AsyncSubject[RawEmit]()}
 
     def _init(self):
         super()._init()
 
-    def start(self) -> None:
-        super().start()
-        self._status(Status.RUNNING)
+    async def start(self) -> None:
+        await super().start()
+        await self._status(Status.RUNNING)
 
-    def poll(self) -> None:
+    async def poll(self) -> None:
 
         percent = psutil.cpu_percent()
         if percent:
             emit = RawEmit(value=percent)
             log.debug(f"doing psutil.emit({self.id}/{self.path}, {self.rx_key_percent}, {emit})")
-            self._rx_observers[self.rx_key_percent].on_next(emit)
+            await self._rx_observers[self.rx_key_percent].asend(emit)
 
         if hasattr(psutil, "sensors_temperatures"):
             temps = psutil.sensors_temperatures()
@@ -50,4 +50,4 @@ class PsutilDriver(PollingDriver):
             if average_temp:
                 emit = RawEmit(value=average_temp)
                 log.debug(f"doing psutil.emit({self.id}/{self.path}, {self.rx_key_temp}, {emit})")
-                self._rx_observers[self.rx_key_temp].on_next(emit)
+                await self._rx_observers[self.rx_key_temp].asend(emit)

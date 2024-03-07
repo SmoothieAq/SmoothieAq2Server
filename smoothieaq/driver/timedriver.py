@@ -2,9 +2,7 @@ from typing import Optional
 from datetime import datetime, timezone
 import time as t
 
-import reactivex as rx
-from reactivex import operators as op
-from reactivex.disposable import Disposable
+import aioreactive as rx
 
 from .driver import Driver, log, Status
 from ..div.emit import RawEmit
@@ -18,25 +16,27 @@ class TimeDriver(Driver):
 
     def __init__(self, m_driver: aqt.Driver):
         super().__init__(m_driver)
-        self.polling_disposable: Optional[Disposable] = None
+        self.polling_disposable: Optional[rx.AsyncDisposable] = None
 
-    def _set_subjects(self) -> dict[str, rx.subject.Subject]:
-        return {self.rx_key: rx.Subject[RawEmit]()}
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {self.rx_key: rx.AsyncSubject[RawEmit]()}
 
-    def start(self) -> None:
-        super().start()
+    async def start(self) -> None:
+        await super().start()
         duration = time.duration(60.)
         first = int(t.time() / duration) * duration + duration
 
         def tick(at):
-            self._rx_observers[self.rx_key].on_next(RawEmit(value=time.time(), enumValue="tick"))
-            next = at + duration
-            self.polling_disposable.dispose()
-            self.polling_disposable = rx.timer(next - t.time()).subscribe(lambda n: tick(next))
-        self.polling_disposable = rx.timer(first - t.time()).subscribe(lambda n: tick(first))
-        self._status(Status.RUNNING)
+            async def _tick(n):
+                await self._rx_observers[self.rx_key].asend(RawEmit(value=time.time(), enumValue="tick"))
+                next = at + duration
+                await self.polling_disposable.dispose_async()
+                self.polling_disposable = await rx.timer(next - t.time()).subscribe_async(tick(next))
+            return _tick
+        self.polling_disposable = await rx.timer(first - t.time()).subscribe_async(tick(first))
+        await self._status(Status.RUNNING)
 
-    def stop(self) -> None:
-        super().stop()
+    async def stop(self) -> None:
+        await super().stop()
         if self.polling_disposable:
-            self.polling_disposable.dispose()
+            await self.polling_disposable.dispose_async()

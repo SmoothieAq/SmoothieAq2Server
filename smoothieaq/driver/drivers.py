@@ -1,5 +1,7 @@
 import importlib
 
+from expression.collections import Seq
+
 from ..div import objectstore as os
 from .driver import Driver
 from ..model import thing as aqt
@@ -15,7 +17,7 @@ def find_driver(m_driver_id: str) -> Driver:
     return d_class(m_driver)
 
 
-def get_m_drivers() -> list[aqt.Driver]:
+def get_m_drivers() -> Seq[aqt.Driver]:
     return os.get_all(aqt.Driver)
 
 

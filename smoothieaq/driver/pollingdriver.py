@@ -1,8 +1,7 @@
 from typing import Optional
 
-import reactivex as rx
-from reactivex import operators as op
-from reactivex.disposable import Disposable
+import aioreactive as rx
+from aioreactive.create import interval
 
 from .driver import Driver, log
 from ..model import thing as aqt
@@ -15,23 +14,22 @@ class PollingDriver(Driver):
     def __init__(self, m_driver: aqt.Driver):
         super().__init__(m_driver)
         self.pollEverySeconds: Optional[float] = None
-        self.polling_disposable: Optional[Disposable] = None
+        self.polling_disposable: Optional[rx.AsyncDisposable] = None
 
     def _init(self):
         super()._init()
         self.pollEverySeconds = float(self.params[self.polling_key])
 
-    def start(self) -> None:
-        super().start()
+    async def start(self) -> None:
+        await super().start()
         duration = time.duration(self.pollEverySeconds)
         log.debug(f"doing driver.pollingEvery({self.id}/{self.path}, {duration})")
-        self.polling_disposable = (
-            rx.interval(duration)
-            .pipe(op.delay_subscription(0.5))
-            .subscribe(lambda n: self.poll())
-        )
 
-    def stop(self) -> None:
-        super().stop()
+        async def _poll(n):
+            await self.poll()
+        self.polling_disposable = await interval(0.5, duration).subscribe_async(_poll)
+
+    async def stop(self) -> None:
+        await super().stop()
         if self.polling_disposable:
-            self.polling_disposable.dispose()
+            await self.polling_disposable.dispose_async()
