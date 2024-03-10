@@ -6,6 +6,7 @@ from expression.collections import Block, Map
 
 from ..div.emit import RawEmit
 from . import devices as dv
+from ..div.enums import convert
 from ..model import expression as aqe
 from ..util.rxutil import distinct_until_changed, sample, AsyncBehaviorSubject, ix
 
@@ -33,10 +34,15 @@ _binaries: dict[aqe.BinaryOp, Callable[[RawEmit, RawEmit], RawEmit]] = {
     aqe.BinaryOp.LE: lambda e1, e2: RawEmit(
         value=float(e1.value <= e2.value if e1.value and e2.value
                     else e1.enumValue is not None and e2.enumValue is not None and e1.enumValue == e2.enumValu)),
-    aqe.BinaryOp.ADD: lambda e1, e2: RawEmit(value=e1.value + e2.value),
-    aqe.BinaryOp.SUBTRACT: lambda e1, e2: RawEmit(value=e1.value - e2.value),
-    aqe.BinaryOp.MULTIPLY: lambda e1, e2: RawEmit(value=e1.value * e2.value),
-    aqe.BinaryOp.DIVIDE: lambda e1, e2: RawEmit(value=e1.value / e2.value), }
+    aqe.BinaryOp.ADD: lambda e1, e2: RawEmit(value=e1.value + e2.value) if (
+        e1.value is not None and e2.value is not None) else RawEmit(),
+    aqe.BinaryOp.SUBTRACT: lambda e1, e2: RawEmit(value=e1.value - e2.value) if (
+        e1.value is not None and e2.value is not None) else RawEmit(),
+    aqe.BinaryOp.MULTIPLY: lambda e1, e2: RawEmit(value=e1.value * e2.value) if (
+        e1.value is not None and e2.value is not None) else RawEmit(),
+    aqe.BinaryOp.DIVIDE: lambda e1, e2: RawEmit(value=e1.value / e2.value) if (
+        e1.value is not None and e2.value is not None) else RawEmit(),
+}
 _rxOps0: dict[aqe.RxOp0, Callable[[], Callable[[rx.AsyncObservable[RawEmit]], rx.AsyncObservable[RawEmit]]]] = {
     aqe.RxOp0.DISTINCT: lambda: distinct_until_changed(comparer=lambda e1, e2: (
         e1.enumValue == e2.enumValue if e1.enumValue or e2.enumValue else (
@@ -59,6 +65,8 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.AsyncObs
 
     def find(expr: aqe.Expr) -> None:
         if isinstance(expr, aqe.UnaryOpExpr):
+            find(expr.expr)
+        elif isinstance(expr, aqe.ConvertExpr):
             find(expr.expr)
         elif isinstance(expr, aqe.BinaryOpExpr):
             find(expr.expr1)
@@ -100,7 +108,7 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.AsyncObs
                         return AsyncBehaviorSubject(RawEmit(note=note))
                     return o
 
-                rx_observables[id] = rx.defer(get_observable)
+                rx_observables[expr.observableRef] = rx.defer(get_observable)
 
     find(expr)
     return rx_observables
@@ -111,7 +119,10 @@ def evaluate(expr: aqe.Expr, vals: Map[str, RawEmit]) -> RawEmit:
         try:
             if isinstance(expr, aqe.UnaryOpExpr):
                 return _unaries[expr.op](eval(expr.expr))
+            if isinstance(expr, aqe.ConvertExpr):
+                return RawEmit(value=convert(eval(expr.expr).value, expr.quantity, expr.fromUnit, expr.toUnit))
             if isinstance(expr, aqe.BinaryOpExpr):
+                # print(expr.op.name, eval(expr.expr1), eval(expr.expr2), _binaries[expr.op](eval(expr.expr1), eval(expr.expr2)), expr)
                 return _binaries[expr.op](eval(expr.expr1), eval(expr.expr2))
             if isinstance(expr, aqe.IfExpr):
                 return eval(expr.thenExpr) if eval(expr.ifExpr).value else eval(expr.elseExpr)
@@ -156,12 +167,12 @@ def as_observable(expr: aqe.Expr, device_id: str) -> rx.AsyncObservable[RawEmit]
         if isinstance(expr, aqe.ObservableExpr):
             return rx_observables[expr.observableRef]
         if len(observable_ids) == 0:
-            return AsyncBehaviorSubject(evaluate(expr, {}))
+            return AsyncBehaviorSubject(evaluate(expr, Map.empty()))
 
         def oa(a, ids: Block[str]) -> Map[str, RawEmit]:
             match a:
                 case (a1, a2):
-                    return oa(a1, ids[:-2]).add(ids[-1], a2)
+                    return oa(a1, ids.take(len(ids) - 1)).add(ids[-1], a2)
                 case _:
                     return Map.empty().add(ids[0], a)
         return rx.pipe(

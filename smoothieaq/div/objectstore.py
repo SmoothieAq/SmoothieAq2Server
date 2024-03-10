@@ -4,9 +4,9 @@ from pydantic import RootModel
 from pydantic_yaml import parse_yaml_file_as
 from expression.collections.seq import Seq
 
-from smoothieaq.model import enum as aqe
-from smoothieaq.model import thing as aqt
-from smoothieaq.util.rxutil import ix
+from ..model import enum as aqe
+from ..model import thing as aqt
+from ..util.rxutil import ix
 
 _objects: dict[any, dict[str, any]] = {}
 
@@ -19,6 +19,8 @@ async def _load_type(type: Type, file: str) -> None:
 
 async def load() -> None:
     await _load_type(aqe.Enum, "enums")
+    from .enums import load as enum_load
+    enum_load()
     await _load_type(aqt.Driver, "drivers")
     await _load_type(aqt.EmitDriver, "emitdrivers")
 

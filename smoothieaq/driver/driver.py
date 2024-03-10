@@ -1,13 +1,11 @@
 import logging
-from copy import deepcopy
 from enum import StrEnum, auto
 from typing import Optional
 
 import aioreactive as rx
+from expression.collections import Map
 
 from ..div.emit import RawEmit
-from ..model import thing as aqt
-from ..util.dataclassutil import overwrite
 from ..util.rxutil import AsyncBehaviorSubject
 
 log = logging.getLogger(__name__)
@@ -27,30 +25,15 @@ class Status(StrEnum):
 class Driver:
     id: str
 
-    def __init__(self, m_driver: aqt.Driver) -> None:
-        self.m_driver = m_driver
+    def __init__(self) -> None:
         self.path: Optional[str] = None
-        self.params: Optional[dict[str, str]] = None
+        self.params: Optional[Map[str, str]] = None
         self.status: Status = Status.NO_INIT
         so = AsyncBehaviorSubject[RawEmit](self.status)
         self._rx_status_observer: rx.AsyncObserver[RawEmit] = so
         self.rx_status_observable: rx.AsyncObservable[RawEmit] = so
         self._rx_observers: dict[str, rx.AsyncObserver[RawEmit]] = {}
         self.rx_observables: dict[str, rx.AsyncObservable[RawEmit]] = {}
-
-    def create_m_device(self, driver_info: Optional[aqt.DriverRef] = None) -> aqt.Device:
-        m_device = deepcopy(self.m_driver.templateDevice)
-        if driver_info:
-            if driver_info.path:
-                m_device.driver.path = driver_info.path
-            if driver_info.params:
-                overwrite(m_device.driver.params, driver_info.params)
-        return m_device
-
-    def create_m_observable(self) -> aqt.Observable:
-        m_observable = self.m_driver.templateDevice.observables[0]
-        m_observable.driver = self.m_driver.templateDevice.driver
-        return m_observable
 
     async def discover_device_paths(self) -> list[str]:
         return []
@@ -59,13 +42,13 @@ class Driver:
         self.status = status
         await self._rx_status_observer.asend(RawEmit(enumValue=status))
 
-    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
-        return {}
+    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
+        return Map.empty()
 
     def _init(self):
         pass
 
-    def init(self, path: str, params: dict[str, str]) -> 'Driver':
+    def init(self, path: str, params: Map[str, str]) -> 'Driver':
         log.info(f"doing driver.init({self.id}/{path})")
         self.path = path
         self.params = params
@@ -73,7 +56,7 @@ class Driver:
         sos = self._set_subjects()
         self._rx_observers = sos
         self.rx_observables = sos
-        #self._status(Status.NOT_STARTED)
+        # self._status(Status.NOT_STARTED)
         return self
 
     async def start(self) -> None:

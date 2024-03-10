@@ -3,13 +3,14 @@ from enum import StrEnum, auto
 from typing import Optional, Callable
 
 import aioreactive as rx
+from expression.collections import Map, Block
 
 from .expression import as_observable
 from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun
 from ..driver.driver import Status as DriverStatus, Driver
-from ..driver.drivers import find_driver
+from ..driver.drivers import get_driver
 from ..model import thing as aqt
-from ..util.rxutil import ix, AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async
+from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async
 
 log = logging.getLogger(__name__)
 
@@ -27,9 +28,9 @@ class Status(StrEnum):
 def driver_init(driver_ref: aqt.DriverRef, id: str) -> Optional[Driver]:
     if not driver_ref or not driver_ref.id:
         return None
-    driver = find_driver(driver_ref.id)
+    driver = get_driver(driver_ref.id)
     path = driver_ref.path or id
-    params = dict(ix(driver_ref.params or []).map(lambda p: (p.key, p.value)))
+    params = Map.of_block(Block(driver_ref.params or []).map(lambda p: (p.key, p.value)))
     return driver.init(path, params)
 
 
@@ -110,19 +111,19 @@ class Observable[MO: aqt.AbstractObservable]:
 
         o: rx.AsyncObservable[RawEmit]
         s: rx.AsyncObservable[RawEmit]
-        if self.m_observable.driver and self.m_observable.driver.id:
-            log.debug(f"observing own driver({self.driver.id}) on observable({self.id})")
-            self.driver = driver_init(self.m_observable.driver, self.id)
-            o = self.driver.rx_observables['A']
-            s = self.driver.rx_status_observable
-        elif self.device.driver:
-            log.info(f"observing device driver({self.device.driver.id}) on observable({self.id})")
-            o = self.device.driver.rx_observables[self.m_observable.id]
-            s = self.device.driver.rx_status_observable
-        elif self.m_observable.expr:
+        if self.m_observable.expr:
             log.debug(f"observing expression on observable({self.id})")
             o = as_observable(self.m_observable.expr, self.device.id)
             s = AsyncBehaviorSubject(RawEmit(enumValue=DriverStatus.RUNNING))
+        elif self.m_observable.driver and self.m_observable.driver.id:
+            self.driver = driver_init(self.m_observable.driver, self.id)
+            log.debug(f"observing own driver({self.driver.id}) on observable({self.id})")
+            o = self.driver.rx_observables['A']
+            s = self.driver.rx_status_observable
+        elif self.device.driver and self.device.driver.rx_observables.__contains__(self.m_observable.id):
+            log.debug(f"observing device driver({self.device.driver.id}) on observable({self.id})")
+            o = self.device.driver.rx_observables[self.m_observable.id]
+            s = self.device.driver.rx_status_observable
         else:
             log.error(f"nothing to observe on observable({self.id})")
             o = AsyncBehaviorSubject(RawEmit())
@@ -395,6 +396,21 @@ class Amount(_SetObservable[aqt.Amount], _ValueObservable[aqt.Amount]):
             await self.set_value(e.value, note)
 
         await take_first_async(as_observable(self.m_observable.resetExpr, self.device.id), _reset)
+
+    async def start(self) -> None:
+        await super().start()
+        if self.m_observable.addExpr:
+            async def add(re: RawEmit) -> None:
+                log.debug(f"doing observable.addExpr({self.id},{re.value},{re.note})")
+
+                async def _add(e: ObservableEmit):
+                    await self.set_value(e.value + re.value, re.note)
+
+                await take_first_async(self.rx_observable, _add)
+
+            self._disposables.append(
+                await as_observable(self.m_observable.addExpr, self.device.id).subscribe_async(add)
+            )
 
 
 class State(_SetObservable[aqt.State]):

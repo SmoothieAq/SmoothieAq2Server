@@ -20,6 +20,7 @@ def print_hi(name):
 async def doit():
     logging.getLogger().setLevel(logging.INFO)
     logging.getLogger("smoothieaq").setLevel(logging.INFO)
+    logging.getLogger("smoothieaq.driver.chihiros").setLevel(logging.DEBUG)
     logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
     logging.info("info")
     await os.load()

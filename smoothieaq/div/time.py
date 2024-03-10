@@ -21,7 +21,6 @@ def simulate(start_time: float = t.time(), speed: float = 1) -> None:
 
 
 def is_simulating() -> bool:
-    print("##",simulating)
     return simulating.simulating
 
 

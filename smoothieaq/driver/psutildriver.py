@@ -3,11 +3,11 @@ import statistics
 
 import psutil
 import aioreactive as rx
+from expression.collections import Map
 
 from smoothieaq.div.emit import RawEmit
 from .driver import Status
 from .pollingdriver import PollingDriver
-from ..model import thing as aqt
 
 
 log = logging.getLogger(__name__)
@@ -18,14 +18,15 @@ class PsutilDriver(PollingDriver):
     rx_key_percent: str = 'A'
     rx_key_temp: str = 'B'
 
-    def __init__(self, m_driver: aqt.Driver):
-        super().__init__(m_driver)
-
     def discover_device_paths(self) -> list[str]:
         return ["computer"]
 
-    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
-        return {self.rx_key_percent: rx.AsyncSubject[RawEmit](), self.rx_key_temp: rx.AsyncSubject[RawEmit]()}
+    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
+        return Map.empty().add(
+            self.rx_key_percent, rx.AsyncSubject[RawEmit]()
+        ).add(
+            self.rx_key_temp, rx.AsyncSubject[RawEmit]()
+        )
 
     def _init(self):
         super()._init()

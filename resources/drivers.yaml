@@ -61,6 +61,8 @@
         category: internal
       - type: Amount
         id: A2
+        driver:
+          id: MemoryDriver
         operations:
           - set
         name: maxLumen
@@ -93,12 +95,15 @@
             value: 0.0
       - type: Amount
         id: A4
+        driver:
+          id: MemoryDriver
         operations:
+          - reset
         name: lightDay
         description: Amount of light this day, reset at midnight.
         quantityType: luminousFlux.klmh
         category: secondary
-        resetValue:
+        resetExpr:
           type: ValueExpr
           value: 0.0
         addExpr:
@@ -278,7 +283,7 @@
           expr1:
             type: ObservableExpr
             observableRef: R3
-          op: multiply
+          op: add
           expr2:
             type: ObservableExpr
             observableRef: G3
@@ -289,12 +294,18 @@
         expr:
           type: BinaryOpExpr
           expr1:
-            type: ObservableExpr
-            observableRef: A3
-          op: divide
+              type: ValueExpr
+              value: 100.0
+          op: multiply
           expr2:
-            type: ObservableExpr
-            observableRef: A2
+            type: BinaryOpExpr
+            expr1:
+              type: ObservableExpr
+              observableRef: A3
+            op: divide
+            expr2:
+              type: ObservableExpr
+              observableRef: A2
 - id: Chihiros2LedDriver
   name: Chihiros 2 LED driver
   description: |-
@@ -302,46 +313,15 @@
     Read there for support for different Chihiros LED devices.
     
     Path should be the BLE address of the LED.
+  basedOnDriver: Led2Driver
   canDiscover: true
   canMultiInstance: true
   canSingleObservable: false
-  paramDescriptions:
-    - id: ChihirosLedDriver.p1
-      key: colorIds
-      defaultValue: "W"
-      description: |-
-        A list of the colors of LED on the device, common ones are "W", "RGB", "RGBW" and "RG".
   templateDevice:
     name: Chihiros LED
-    site: aquarium1
-    place: above
-    category: primary
-    type: light
     driver:
       id: ChihirosLedDriver
       path: -fill-with-ble-uuid-
-      params:
-        - key: colorIds
-          value: "W"
-    operations:
-    observables:
-      - type: State
-        id: A
-        operations:
-          - set
-        name: OnOff
-        description: LED on or off
-        enumType: onOff
-        category: internal
-      - type: Amount
-        id: W1
-        operations:
-          - set
-        name: Brightness
-        description: Brightness
-        quantityType: fraction.%
-        precision: 1
-        category: internal
 - id: PsutilDriver
   name: Computer driver
   description: |-

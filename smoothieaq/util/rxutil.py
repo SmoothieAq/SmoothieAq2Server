@@ -10,11 +10,9 @@ from aioreactive.observers import auto_detach_observer, AsyncNotificationObserve
 from aioreactive.subject import AsyncMultiSubject
 from aioreactive.types import _T_out
 from aioreactive.create import interval
-from expression import MailboxProcessor, pipe, tailrec_async, TailCallResult, TailCall
+from expression import MailboxProcessor, pipe, tailrec_async, TailCallResult, TailCall, snd
 from expression.collections import Seq
 from expression.collections.seq import of_iterable
-from expression.core import fst
-from expression.core.aiotools import start
 from expression.system import AsyncDisposable
 
 log = logging.getLogger(__name__)
@@ -281,12 +279,21 @@ async def _distinct_until_changed_test():
 def sample(
         sampler: AsyncObservable[any] | float
 ) -> Callable[[AsyncObservable[_TSource]], AsyncObservable[_TSource]]:
-    frm = sampler if isinstance(sampler, AsyncObservable) else interval(sampler, sampler)
+    frm = interval(5,5) # sampler if isinstance(sampler, AsyncObservable) else interval(sampler, sampler)
 
     def _sample(source: AsyncObservable[_TSource]) -> AsyncObservable[_TSource]:
-        return pipe(source, rx.with_latest_from(frm), rx.map(fst))
+        return pipe(frm, rx.with_latest_from(source), rx.map(snd))
 
     return _sample
+
+
+def trace(
+        label: str = "trace"
+) -> Callable[[AsyncObservable[_TSource]], AsyncObservable[_TSource]]:
+    def _trace(n: _TSource) -> _TSource:
+        print("-->", label, n)
+        return n
+    return rx.map(_trace)
 
 
 async def take_first[T](obs: AsyncObservable[T], do: Callable[[T], None]) -> None:

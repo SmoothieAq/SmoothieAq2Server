@@ -4,15 +4,14 @@ import aioreactive as rx
 from aioreactive.create import interval
 
 from .driver import Driver, log
-from ..model import thing as aqt
 from ..div import time
 
 
 class PollingDriver(Driver):
     polling_key: str = 'pollEverySeconds'
 
-    def __init__(self, m_driver: aqt.Driver):
-        super().__init__(m_driver)
+    def __init__(self):
+        super().__init__()
         self.pollEverySeconds: Optional[float] = None
         self.polling_disposable: Optional[rx.AsyncDisposable] = None
 
