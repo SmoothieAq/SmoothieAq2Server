@@ -5,31 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change afterPath="$PROJECT_DIR$/smoothieaq/driver/leddriver.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/chihiros/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/chihiroshal.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/chihirosledhal.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/connecthal.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/hal.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/hals.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/npwmhal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/drivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/drivers.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/device.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/device.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/observable.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/observable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/chihiros/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/hal/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/chihiros/chihirosctl.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/chihiros/commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/chihiros/commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/chihirosleddriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/chihirosleddriver_old.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/driver/driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/driver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/pollingdriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/pollingdriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/timedriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/timedriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/hal/chihiroshal.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/chihiroshal.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,7 +162,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710091329101</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="-">
+      <option name="closed" value="true" />
+      <created>1710661479023</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710661479023</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

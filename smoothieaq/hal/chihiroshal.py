@@ -49,6 +49,9 @@ class _Chihiros(_HalConnection[Command, ChihirosHal]):
         if not self.disconnecting:
             log.error(f"Unexpected BLE disconnect from {self.connectHal.path}")
 
+    def is_connected(self) -> bool:
+        return self.client.is_connected
+
     async def do_connect(self):
         await self.client.connect()
         log.debug(f"Connected BLE to {self.connectHal.path}")

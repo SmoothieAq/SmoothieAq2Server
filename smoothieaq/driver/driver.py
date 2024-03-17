@@ -69,7 +69,7 @@ class Driver[H: Hal]:
         if self.hal:
             async def error_handler(note: str):
                 await self._status(Status.IN_ERROR, note=note)
-            self.hal.init(self.path+"??", self.params, error_handler)
+            self.hal.init(self.path, self.params, error_handler)
             await self.hal.start()
         await self._status(Status.STARTING)
 

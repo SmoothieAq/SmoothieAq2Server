@@ -25,7 +25,7 @@ async def doit():
     logging.info("info")
     await os.load()
     await sleep(1)
-    t.simulate(speed=10)
+    #t.simulate(speed=10)
     await test()
 
 

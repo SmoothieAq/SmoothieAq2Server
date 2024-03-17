@@ -14,7 +14,7 @@ import time as t
 
 async def test():
 
-    time.simulate(speed=10)
+    #time.simulate(speed=10)
 
     async def p(e):
         print(
@@ -36,7 +36,12 @@ async def test():
         await sleep(1)
 
         await cast(Amount, dv.get_observable(dvch + ":R2")).set_value(20.)
-        await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(10.)
+        await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(40.)
+
+        #for i in range(0,100):
+        #    await cast(Amount, dv.get_observable(dvch + ":R2")).set_value(float(i))
+        #    await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(float(i))
+        #    await sleep(0.5)
 
     #await sleep(60)
 
