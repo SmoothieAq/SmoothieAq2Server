@@ -149,7 +149,7 @@ class Observable[MO: aqt.AbstractObservable]:
             log.debug(f"evaluating observable.status({self.id}, {device_status}, {paused}, {driver_status}, "
                       f"{require_status})")
             if not device_status.enumValue == Status.RUNNING:
-                return RawEmit(enumValue=device_status.enumValue)
+                return RawEmit(enumValue=device_status.enumValue, note=device_status.note)
             if paused:
                 return RawEmit(enumValue=Status.PAUSED)
             if driver_status.enumValue in {DriverStatus.RUNNING, DriverStatus.PROGRAM_RUNNING,

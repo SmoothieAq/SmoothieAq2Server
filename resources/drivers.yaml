@@ -124,8 +124,16 @@
   name: Abstract generic LED driver
   description: |-
     todo
+  paramDescriptions:
+    - id: LightDriver.p3
+      key: hal
+      defaultValue: NPwmHal
+      description: |-
+        Must be sub-class of NPwmHal
   basedOnDriver: LightDriver
   templateDevice:
+    driver:
+      id: LedDriver
     observables:
       - type: Amount
         id: A5
@@ -320,7 +328,9 @@
   templateDevice:
     name: Chihiros LED
     driver:
-      id: ChihirosLedDriver
+      params:
+        - key: hal
+          value: ChihirosLedHal
       path: -fill-with-ble-uuid-
 - id: PsutilDriver
   name: Computer driver

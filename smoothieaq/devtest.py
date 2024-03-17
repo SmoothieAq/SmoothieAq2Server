@@ -46,7 +46,7 @@ async def test():
         dr3 = dr.get_m_driver("MemoryMeasureDriver")
         dr4 = dr.get_m_driver("MemoryStateDriver")
 
-    if False:
+    if True:
         dl = edr.find_emit_driver("LogEmitDriver")
         edv1 = dl.create_m_device()
         # edv1.enabled = True

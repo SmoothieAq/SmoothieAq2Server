@@ -3,7 +3,7 @@ from typing import Optional
 import aioreactive as rx
 
 from .observable import Observable, driver_init, Status, Measure, Amount, State, Event
-from ..div.emit import ObservableEmit, RawEmit, emit_enum_value
+from ..div.emit import ObservableEmit, RawEmit, emit_enum_value, emit_raw_fun
 from ..driver.driver import Driver, Status as DriverStatus
 from ..model import thing as aqt
 from ..util.rxutil import AsyncBehaviorSubject
@@ -50,25 +50,25 @@ class Device:
             else:
                 s = AsyncBehaviorSubject(RawEmit(enumValue=DriverStatus.RUNNING))
 
-            def status(t: tuple[bool, RawEmit]) -> Status:
+            def status(t: tuple[bool, RawEmit]) -> RawEmit:
                 (paused, driver_status) = t
                 # print("dev stat",self.id, paused,driver_status)
                 if paused:
-                    return Status.PAUSED
+                    return RawEmit(enumValue=Status.PAUSED)
                 elif driver_status.enumValue in {DriverStatus.RUNNING, DriverStatus.PROGRAM_RUNNING,
                                                  DriverStatus.SCHEDULE_RUNNING}:
-                    return Status.RUNNING
+                    return RawEmit(enumValue=Status.RUNNING)
                 elif driver_status.enumValue in {DriverStatus.IN_ERROR, DriverStatus.CLOSING}:
-                    return Status.ERROR
+                    return RawEmit(enumValue=Status.ERROR, note=driver_status.note)
                 else:
-                    return Status.INITIALIZING
+                    return RawEmit(enumValue=Status.INITIALIZING)
 
             self.rx_status_observable = rx.pipe(
                 self._rx_paused,
                 rx.combine_latest(s),
                 rx.map(status),
                 rx.distinct_until_changed,
-                rx.map(lambda s: emit_enum_value(id=self.status_id, enum_value=s))
+                rx.map(emit_raw_fun(self.status_id))
             )
         else:
             self.rx_status_observable = AsyncBehaviorSubject(emit_enum_value(self.status_id, Status.DISABLED))

@@ -8,12 +8,12 @@ from expression.collections import Map
 from smoothieaq.div.emit import RawEmit
 from .driver import Status
 from .pollingdriver import PollingDriver
-
+from ..hal.hal import NoHal
 
 log = logging.getLogger(__name__)
 
 
-class PsutilDriver(PollingDriver):
+class PsutilDriver(PollingDriver[NoHal]):
     id = "PsutilDriver"
     rx_key_percent: str = 'A'
     rx_key_temp: str = 'B'

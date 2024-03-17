@@ -7,9 +7,10 @@ from expression.collections import Map
 from .driver import Driver, Status
 from ..div import time
 from ..div.emit import RawEmit
+from ..hal.hal import NoHal
 
 
-class TimeDriver(Driver):
+class TimeDriver(Driver[NoHal]):
     id = "TimeDriver"
     rx_key: str = 'A'
 

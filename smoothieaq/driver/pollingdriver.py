@@ -5,9 +5,10 @@ from aioreactive.create import interval
 
 from .driver import Driver, log
 from ..div import time
+from ..hal.hal import Hal
 
 
-class PollingDriver(Driver):
+class PollingDriver[H: Hal](Driver[H]):
     polling_key: str = 'pollEverySeconds'
 
     def __init__(self):

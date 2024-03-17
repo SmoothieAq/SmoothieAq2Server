@@ -7,9 +7,10 @@ from expression.collections import Map
 from smoothieaq.div.emit import RawEmit
 from .driver import Status, log
 from .pollingdriver import PollingDriver
+from ..hal.hal import NoHal
 
 
-class DummyDriver(PollingDriver):
+class DummyDriver(PollingDriver[NoHal]):
     id = "DummyDriver"
     mu_key: str = 'generateGaussMu'
     sigma_key: str = 'generateGaussSigma'

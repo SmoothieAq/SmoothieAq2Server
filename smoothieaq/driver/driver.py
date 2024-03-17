@@ -1,11 +1,13 @@
 import logging
 from enum import StrEnum, auto
-from typing import Optional
+from typing import Optional, cast
 
 import aioreactive as rx
 from expression.collections import Map
 
 from ..div.emit import RawEmit
+from ..hal import hals
+from ..hal.hal import Hal
 from ..util.rxutil import AsyncBehaviorSubject
 
 log = logging.getLogger(__name__)
@@ -22,12 +24,13 @@ class Status(StrEnum):
     CLOSING = auto()
 
 
-class Driver:
+class Driver[H: Hal]:
     id: str
 
     def __init__(self) -> None:
         self.path: Optional[str] = None
         self.params: Optional[Map[str, str]] = None
+        self.hal: Optional[H] = None
         self.status: Status = Status.NO_INIT
         so = AsyncBehaviorSubject[RawEmit](self.status)
         self._rx_status_observer: rx.AsyncObserver[RawEmit] = so
@@ -38,9 +41,9 @@ class Driver:
     async def discover_device_paths(self) -> list[str]:
         return []
 
-    async def _status(self, status: Status):
+    async def _status(self, status: Status, note: str = None):
         self.status = status
-        await self._rx_status_observer.asend(RawEmit(enumValue=status))
+        await self._rx_status_observer.asend(RawEmit(enumValue=status, note=note))
 
     def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
         return Map.empty()
@@ -52,6 +55,8 @@ class Driver:
         log.info(f"doing driver.init({self.id}/{path})")
         self.path = path
         self.params = params
+        if params.__contains__("hal"):
+            self.hal = cast(H, hals.get_hal(params["hal"]))
         self._init()
         sos = self._set_subjects()
         self._rx_observers = sos
@@ -61,20 +66,26 @@ class Driver:
 
     async def start(self) -> None:
         log.debug(f"doing driver.start({self.id}/{self.path})")
+        if self.hal:
+            async def error_handler(note: str):
+                await self._status(Status.IN_ERROR, note=note)
+            self.hal.init(self.path+"??", self.params, error_handler)
+            await self.hal.start()
         await self._status(Status.STARTING)
 
-    #   @abstractmethod
     async def poll(self) -> None:
         log.debug(f"doing driver.poll({self.id}/{self.path})")
-        raise Exception('Not implemented')
+        raise NotImplemented
 
     async def set(self, rx_key: str, emit: RawEmit) -> None:
         log.debug(f"doing driver.set({self.id}/{self.path}, {rx_key}, {emit})")
-        raise Exception('Not implemented')
+        raise NotImplemented
 
     async def stop(self) -> None:
         log.debug(f"doing driver.stop({self.id}/{self.path})")
         await self._status(Status.CLOSING)
+        if self.hal:
+            await self.hal.stop()
 
     async def close(self) -> None:
         log.debug(f"doing driver.close({self.id}/{self.path})")

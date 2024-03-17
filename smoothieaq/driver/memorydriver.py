@@ -4,9 +4,10 @@ from expression.collections import Map
 from smoothieaq.div.emit import RawEmit
 from .driver import Driver, log
 from .driver import Status
+from ..hal.hal import NoHal
 
 
-class MemoryDriver(Driver):
+class MemoryDriver(Driver[NoHal]):
     id = "MemoryDriver"
     rx_key: str = 'A'
 
