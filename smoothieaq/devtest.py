@@ -1,3 +1,4 @@
+import datetime
 from asyncio import sleep
 from typing import cast
 
@@ -14,7 +15,7 @@ import time as t
 
 async def test():
 
-    #time.simulate(speed=10)
+    time.simulate(start_time=datetime.time(8,25), speed=60, minDuration=0.5)
 
     async def p(e):
         print(
@@ -35,15 +36,15 @@ async def test():
 
         await sleep(1)
 
-        await cast(Amount, dv.get_observable(dvch + ":R2")).set_value(20.)
-        await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(40.)
+        await cast(Amount, dv.get_observable(dvch + ":R2")).set_value(0.)
+        await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(0.)
 
         #for i in range(0,100):
         #    await cast(Amount, dv.get_observable(dvch + ":R2")).set_value(float(i))
         #    await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(float(i))
         #    await sleep(0.5)
 
-    #await sleep(60)
+    await sleep(120)
 
     if False:
         dr1 = dr.get_m_driver("DummyDriver")

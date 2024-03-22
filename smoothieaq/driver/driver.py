@@ -66,12 +66,12 @@ class Driver[H: Hal]:
 
     async def start(self) -> None:
         log.debug(f"doing driver.start({self.id}/{self.path})")
+        await self._status(Status.STARTING)
         if self.hal:
             async def error_handler(note: str):
                 await self._status(Status.IN_ERROR, note=note)
             self.hal.init(self.path, self.params, error_handler)
             await self.hal.start()
-        await self._status(Status.STARTING)
 
     async def poll(self) -> None:
         log.debug(f"doing driver.poll({self.id}/{self.path})")

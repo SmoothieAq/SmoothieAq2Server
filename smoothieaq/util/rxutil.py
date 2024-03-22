@@ -312,6 +312,21 @@ async def take_first_async[T](obs: AsyncObservable[T], do: Callable[[T], Awaitab
     disposable = await rx.pipe(obs, rx.take(1)).subscribe_async(do_it)
 
 
+def throwIt(txt: str):
+    async def _err(ex: Exception):
+        print(f"!!! {txt} {self.id}", ex)
+        log.error(f"{txt} {self.id}", exc_info=ex)
+
+    return _err
+
+
+def printIt(txt: str):
+    async def _print(e):
+        print(f"!!! {txt} {self.id}", e)
+
+    return _print
+
+
 def ix(i: Iterable[_TSource]) -> Seq[_TSource]:
     return of_iterable(i)
 

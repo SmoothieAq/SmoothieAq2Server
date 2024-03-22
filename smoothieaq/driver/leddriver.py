@@ -48,6 +48,10 @@ class LedDriver(Driver[NPwmHal]):
                 lambda id: (id, rx.AsyncSubject[RawEmit]()))
         )
 
+    async def start(self) -> None:
+        await super().start()
+        await self._status(Status.RUNNING)
+
     async def set(self, rx_key: str, emit: RawEmit) -> None:
         log.debug(f"doing LedDriver.set({self.id}/{self.path}, {rx_key}, {emit})")
         assert self._rx_observers.__contains__(rx_key)

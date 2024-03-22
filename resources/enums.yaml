@@ -1,4 +1,50 @@
 - type: EnumSimple
+  id: transitionType
+  name: Transition type
+  description:
+  values:
+    - type: EnumValueSimple
+      id: s
+      name: S-shape
+    - type: EnumValueSimple
+      id: lin
+      name: Linear
+    - type: EnumValueSimple
+      id: "on"
+      name: Instant on
+    - type: EnumValueSimple
+      id: steady
+      name: Unchanged
+    - type: EnumValueSimple
+      id: blink
+      name: Blinking
+- type: EnumSimple
+  id: weekDay
+  name: Week day
+  description:
+  values:
+    - type: EnumValueSimple
+      id: mo
+      name: Monday
+    - type: EnumValueSimple
+      id: tu
+      name: Tuesday
+    - type: EnumValueSimple
+      id: we
+      name: Wednesday
+    - type: EnumValueSimple
+      id: th
+      name: Thursday
+    - type: EnumValueSimple
+      id: fr
+      name: Friday
+    - type: EnumValueSimple
+      id: sa
+      name: Saturday
+    - type: EnumValueSimple
+      id: su
+      name: Sunday
+- type: EnumSimple
   id: eventType
   name: Generic event type
   description:

@@ -332,6 +332,22 @@
         - key: hal
           value: ChihirosLedHal
       path: -fill-with-ble-uuid-
+    schedules:
+      - id: "1"
+        at:
+          type: AtWeekday
+          at: 8:30
+        program:
+          length: 10:00:00
+          values:
+            - id: R2
+              value: 80.0
+            - id: G2
+              value: 100.0
+          transition:
+            type: s
+            length: 30:00
+            step: 1
 - id: PsutilDriver
   name: Computer driver
   description: |-

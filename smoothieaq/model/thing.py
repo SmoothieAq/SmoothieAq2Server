@@ -33,6 +33,52 @@ class Condition(Described):
 
 
 @dataclass
+class AbstractScheduleAt:
+    pass
+
+
+@dataclass
+class AtWeekday(AbstractScheduleAt):
+    type: Literal['AtWeekday'] = 'AtWeekday'
+    every: Optional[list[str]] = None  # weekDay
+    at: Optional[str] = None  # hh:mm
+
+
+ScheduleAt = Annotated[(AtWeekday), Field(discriminator='type')]
+
+
+@dataclass
+class Transition:
+    type: Optional[str] = None  # transitionType
+    length: Optional[str] = None  # hours:mins:secs.msecs
+    arg: Optional[float] = None  # depends on type, blink: blink interval, s: steepness
+    step: Optional[float] = None
+
+
+@dataclass
+class ProgramValue:
+    id: Optional[str] = None  # id of observable
+    value: Optional[float] = None
+    enumValue: Optional[str] = None
+
+
+@dataclass
+class Program:
+    length: Optional[str] = None  # hours:mins:secs.msecs
+    values: Optional[list[ProgramValue]] = None
+    transition: Optional[Transition] = None
+    inTransition: Optional[list[Transition]] = None
+    outTransition: Optional[Transition] = None
+
+
+@dataclass
+class Schedule(Identified):
+    at: Optional[AtWeekday] = None
+    program: Optional[Program] = None
+    disabled: Optional[bool] = None
+
+
+@dataclass
 class ValueRequire:
     warningAbove: Optional[float] = None
     warningBelow: Optional[float] = None
@@ -60,7 +106,7 @@ class DriverRef:
 @dataclass
 class AbstractObservable(Thing):
     driver: Optional[DriverRef] = None
-    operations: Optional[list[str]] = None  # operations
+    operations: Optional[list[str]] = None  # operation
     expr: Optional[Expr] = None
 
 
@@ -126,6 +172,7 @@ class Device(Thing):
     driver: Optional[DriverRef] = None
     operations: Optional[list[str]] = None  # operations
     observables: Optional[list[Observable]] = None
+    schedules: Optional[list[Schedule]] = None
 
 
 @dataclass

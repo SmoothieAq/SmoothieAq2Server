@@ -10,13 +10,15 @@ from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun
 from ..driver.driver import Status as DriverStatus, Driver
 from ..driver.drivers import get_driver
 from ..model import thing as aqt
-from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async
+from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async, throwIt
 
 log = logging.getLogger(__name__)
 
 
 class Status(StrEnum):
     RUNNING = auto()
+    SCHEDULE_RUNNING = auto()
+    PROGRAM_RUNNING = auto()
     PAUSED = auto()
     WARNING = auto()
     ALARM = auto()
@@ -179,23 +181,12 @@ class Observable[MO: aqt.AbstractObservable]:
         if self.driver:
             await self.driver.start()
 
-        def throw(txt: str):
-            async def err(ex: Exception):
-                print(f"!!! {txt} {self.id}", ex)
-                log.error(f"{txt} {self.id}", exc_info=ex)
-            return err
-
-        def p(txt: str):
-            async def _p(e):
-                print(f"!!! {txt} {self.id}", e)
-            return _p
-
         for t, o in [
             ("rx_status", self.rx_status_observable),
             ("rx_require", self._rx_require),
             ("rx", self.rx_observable)
         ]:
-            self._disposables.append(await o.subscribe_async(throw=throw(t)))
+            self._disposables.append(await o.subscribe_async(throw=throwIt(t)))
             self._disposables.append(await o.connect())
 
     async def stop(self) -> None:
