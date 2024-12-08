@@ -76,6 +76,7 @@ class Schedule(Identified):
     at: Optional[AtWeekday] = None
     program: Optional[Program] = None
     disabled: Optional[bool] = None
+    pauseExpr: Optional[Expr] = None
 
 
 @dataclass
@@ -108,6 +109,7 @@ class AbstractObservable(Thing):
     driver: Optional[DriverRef] = None
     operations: Optional[list[str]] = None  # operation
     expr: Optional[Expr] = None
+    pauseExpr: Optional[Expr] = None
 
 
 @dataclass
@@ -116,6 +118,7 @@ class ValueObservable(AbstractObservable):
     require: Optional[ValueRequire] = None
     precision: Optional[float] = None
     setExpr: Optional[Expr] = None
+    controller: Optional[bool] = None
 
 
 @dataclass
@@ -170,6 +173,7 @@ class Device(Thing):
     make: Optional[str] = None
     type: Optional[str] = None  # enum deviceType
     driver: Optional[DriverRef] = None
+    pauseExpr: Optional[Expr] = None
     operations: Optional[list[str]] = None  # operations
     observables: Optional[list[Observable]] = None
     schedules: Optional[list[Schedule]] = None

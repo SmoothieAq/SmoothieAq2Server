@@ -58,6 +58,11 @@ def logistic(x: float, k: float) -> float:
     return 1 / (1 + math.exp(-k * x))
 
 
+def logit(x: float, k: float) -> float:
+    # https://en.wikipedia.org/wiki/Logit
+    return 1 / k * math.log(x / (1 - x))
+
+
 async def do_program(device: Device, program: Program, wanted_start_time: float,
                      cancellation: CancellationToken) -> None:
     start_time = div_time()
