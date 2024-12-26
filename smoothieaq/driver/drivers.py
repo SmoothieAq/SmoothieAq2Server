@@ -28,8 +28,12 @@ def get_m_driver(id: str) -> aqt.Driver:
     return m_driver
 
 
-def put_m_driver(m_driver: aqt.Driver) -> None:
-    os.put(aqt.Driver, m_driver.id, m_driver)
+async def put_m_driver(m_driver: aqt.Driver) -> None:
+    await os.put(aqt.Driver, m_driver.id, m_driver)
+
+
+async def update_m_driver(m_driver: aqt.Driver) -> None:
+    await os.replace(aqt.Driver, m_driver.id, m_driver)
 
 
 def create_m_device(m_driver: aqt.Driver, driver_info: Optional[aqt.DriverRef] = None) -> aqt.Device:

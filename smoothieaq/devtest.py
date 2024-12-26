@@ -23,7 +23,7 @@ async def test():
         )
     async def e(ex):
         print("error", ex)
-    #await dv.rx_all_observables.subscribe_async(p,e)
+    await dv.rx_all_observables.subscribe_async(p,e)
 
 
     if True:

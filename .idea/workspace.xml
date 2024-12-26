@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/program.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/program.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/schedules.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/schedules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SmoothieAq2Server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SmoothieAq2Server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/div/objectstore.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/div/objectstore.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/emitdriver/emitdrivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/emitdriver/emitdrivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/routes/drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -228,7 +236,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735206723896</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="-">
+      <option name="closed" value="true" />
+      <created>1735239755108</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1735239755108</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

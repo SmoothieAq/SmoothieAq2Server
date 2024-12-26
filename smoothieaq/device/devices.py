@@ -3,6 +3,7 @@ from typing import Optional
 import aioreactive as rx
 from aioreactive.subject import AsyncMultiSubject
 
+from ..div import objectstore as os
 from .device import Device, Observable
 from ..div.emit import ObservableEmit, emit_empty
 from ..model import thing as aqt
@@ -25,8 +26,11 @@ async def init() -> None:
 def get_last_emit(observable_id: str) -> ObservableEmit:
     return emit_empty(observable_id)  # TODO
 
+async def add_devices() -> None:
+    for m_device in os.get_all(aqt.Device):
+        await _add_device(m_device)
 
-async def _add_device(m_device: aqt.Device) -> None:
+async def _add_device(m_device: aqt.Device, start: bool = True) -> None:
     device = Device()
     device.init(m_device)
     devices[m_device.id] = device
@@ -39,8 +43,21 @@ async def _add_device(m_device: aqt.Device) -> None:
         for (id, observable) in device.observables.items():
             if observable.m_observable.enabled is not False:
                 rx_observables[observable.id] = observable.rx_observable
-        await device.start()
+        if start:
+            await device.start()
     await _rx_device_updates.asend(m_device)
+
+async def update_device(m_device: aqt.Device) -> None:
+    old_device = get_device(m_device.id)
+    assert old_device.m_device.enabled is False or old_device.paused # TODO nice exception
+    del rx_observables[old_device.status_id]
+    for (id, observable) in old_device.observables.items():
+        del observables[observable.id]
+        del rx_observables[observable.status_id]
+        if old_device.m_device.enabled is not False or observable.m_observable.enabled is not False:
+            del rx_observables[observable.id]
+    await _add_device(m_device, False)
+    await os.replace(aqt.Device, m_device.id, m_device)
 
 
 async def stop() -> None:
@@ -60,6 +77,7 @@ async def create_new_device(m_device: aqt.Device) -> str:
             pass
     m_device.id = str(id)
     await _add_device(m_device)
+    await os.put(aqt.Device, m_device.id, m_device)
     return m_device.id
 
 

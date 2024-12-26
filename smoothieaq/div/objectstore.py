@@ -24,6 +24,7 @@ async def load() -> None:
     enum_load()
     await _load_type(aqt.Driver, "drivers")
     await _load_type(aqt.EmitDriver, "emitdrivers")
+    _objects[aqt.Device] = {}
     await devices.init()
 
 
@@ -31,7 +32,11 @@ def get[T](type: Type[T], id: str) -> T:
     return _objects[type][id]
 
 
-def put[T](type: Type[T], id: str, object: T) -> None:
+async def put[T](type: Type[T], id: str, object: T) -> None:
+    _objects[type][id] = object
+
+
+async def replace[T](type: Type[T], id: str, object: T) -> None:
     _objects[type][id] = object
 
 

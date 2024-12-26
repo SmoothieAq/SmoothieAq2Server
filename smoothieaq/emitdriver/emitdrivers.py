@@ -24,5 +24,5 @@ def get_m_emit_driver(id: str) -> aqt.EmitDriver:
     return os.get(aqt.EmitDriver, id)
 
 
-def put_m_emit_driver(m_emit_driver: aqt.EmitDriver) -> None:
-    os.put(aqt.EmitDriver, m_emit_driver.id, m_emit_driver)
+async def put_m_emit_driver(m_emit_driver: aqt.EmitDriver) -> None:
+    await os.put(aqt.EmitDriver, m_emit_driver.id, m_emit_driver)

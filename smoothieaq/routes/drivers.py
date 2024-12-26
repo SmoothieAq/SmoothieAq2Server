@@ -43,6 +43,11 @@ async def get_driver(
         raise HTTPException(404, f"Driver {driver_id} not found")
 
 
+@router.post("/")
+async def post_driver(driver: aqt.Driver) -> None:
+    return await put_m_driver(driver)
+
+
 @router.put("/{driver_id}")
 async def put_driver(driver: aqt.Driver) -> None:
-    return put_m_driver(driver)
+    await update_m_driver(driver)
