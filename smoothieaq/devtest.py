@@ -44,7 +44,7 @@ async def test():
         #    await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(float(i))
         #    await sleep(0.5)
 
-    await sleep(120)
+    await sleep(4)
 
     if False:
         dr1 = dr.get_m_driver("DummyDriver")
@@ -55,8 +55,9 @@ async def test():
     if True:
         dl = edr.find_emit_driver("LogEmitDriver")
         edv1 = dl.create_m_device()
-        # edv1.enabled = True
+        edv1.enabled = True
         await edv.create_new_emit_device(edv1)
+    await sleep(120)
 
     if False:
         mdv1 = create_m_device(dr1)

@@ -21,6 +21,7 @@ async def doit():
     logging.getLogger().setLevel(logging.INFO)
     logging.getLogger("smoothieaq").setLevel(logging.INFO)
     logging.getLogger("smoothieaq.hal").setLevel(logging.DEBUG)
+    logging.getLogger("smoothieaq.emitdevice").setLevel(logging.DEBUG)
     logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
     logging.info("info")
     await os.load()
@@ -33,7 +34,7 @@ async def doit():
 if __name__ == '__main__':
     # print(enum_test())
     #asyncio.run(rxtest())
-    asyncio.run(doit())
+    asyncio.run(doit(),debug=True)
     #asyncio.run(bletest())
 #    from smoothieaq.util.rxutil import _distinct_until_changed_test
 #    asyncio.run(_distinct_until_changed_test())

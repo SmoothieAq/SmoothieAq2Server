@@ -10,3 +10,5 @@
     operations:
       - emit
     enabled: false
+    exclude:
+      - type: time

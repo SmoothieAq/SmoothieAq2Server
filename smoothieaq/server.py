@@ -8,10 +8,23 @@ from .routes import drivers, emits, tests
 from .div import objectstore as ostore
 from contextlib import asynccontextmanager
 
+from smoothieaq.devtest import *
+#from smoothieaq.bletest import *
+import logging
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger("smoothieaq").setLevel(logging.INFO)
+    logging.getLogger("smoothieaq.hal").setLevel(logging.DEBUG)
+    logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
+    logging.info("info")
     await ostore.load()
+    await sleep(1)
+    #t.simulate(speed=10)
+    await test()
+#    await ostore.load()
     yield
 
 

@@ -8,7 +8,7 @@ from ..device.devices import get_rx_device_updates, rx_all_observables
 from ..emitdriver.emitdriver import EmitDriver
 from ..emitdriver.emitdrivers import find_emit_driver
 from ..model import thing as aqt
-from ..util.rxutil import buffer_with_time
+from ..util.rxutil import buffer_with_time, trace
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class EmitDevice:
         return await driver.init(path, params)
 
     async def update_filter(self, m_device: aqt.Device) -> None:
-        def include(id: str, status: bool, t1: tuple[str, str, str], t2: tuple[str, str, str]) -> bool:
+        def include(id: str, status: bool, t1: tuple[str, str, str, str], t2: tuple[str, str, str, str]) -> bool:
             def match(filter: aqt.EmitDeviceFilter) -> bool:
                 if filter.id and not filter.id == id:
                     return False
@@ -49,6 +49,8 @@ class EmitDevice:
                     return False
                 if filter.category is not None and not filter.category == (t2[2] or t1[2]):
                     return False
+                if filter.type is not None and not filter.type == (t2[3] or t1[3]):
+                    return False
                 return True
 
             def any_match(filters: list[aqt.EmitDeviceFilter]) -> bool:
@@ -57,10 +59,10 @@ class EmitDevice:
             return any_match(self.m_emit_device.include) and not any_match(self.m_emit_device.exclude)
 
         log.debug(f"doing emitdevice.update_filter({m_device.id})")
-        t1 = (m_device.site, m_device.place, m_device.category)
+        t1 = (m_device.site, m_device.place, m_device.category, m_device.type)
         self.filter[m_device.id + '?'] = include(m_device.id + '?', True, t1, t1)
         for m_observable in m_device.observables:
-            t2 = (m_observable.site, m_observable.place, m_observable.category)
+            t2 = (m_observable.site, m_observable.place, m_observable.category, m_observable.type)
             id = m_device.id + m_observable.id
             self.filter[id + '?'] = include(id + '?', True, t1, t2)
             self.filter[id] = include(id, False, t1, t2)
@@ -74,7 +76,8 @@ class EmitDevice:
             self.driver = await self.driver_init(m_emit_device.driver, self.id)
 
     async def start(self):
-        self._disposables.append(await get_rx_device_updates().subscribe_async(self.update_filter))
+        log.info(f"doing emitdevice.start({self.id})")
+        self._disposables.append(await rx.pipe(get_rx_device_updates(), trace()).subscribe_async(self.update_filter))
         o = rx.pipe(
             rx_all_observables,
             rx.filter(lambda e: self.filter.get(e.observable_id, True)),
@@ -83,5 +86,6 @@ class EmitDevice:
         self._disposables.append(await o.subscribe_async(self.driver.emit))
 
     async def stop(self):
+        log.info(f"doing emitdevice.stop({self.id})")
         for disposable in self._disposables:
             await disposable.dispose_async()

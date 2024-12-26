@@ -7,6 +7,7 @@ from expression.collections.seq import Seq
 from ..model import enum as aqe
 from ..model import thing as aqt
 from ..util.rxutil import ix
+from ..device import devices
 
 _objects: dict[any, dict[str, any]] = {}
 
@@ -23,6 +24,7 @@ async def load() -> None:
     enum_load()
     await _load_type(aqt.Driver, "drivers")
     await _load_type(aqt.EmitDriver, "emitdrivers")
+    await devices.init()
 
 
 def get[T](type: Type[T], id: str) -> T:

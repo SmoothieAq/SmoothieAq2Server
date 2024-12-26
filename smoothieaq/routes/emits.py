@@ -1,11 +1,11 @@
 import orjson
 from fastapi import WebSocket, APIRouter
 from fastapi.responses import HTMLResponse
-from reactivex import operators as op
+import aioreactive as rx
 
 from ..device import devices
 from ..div.emit import emit_to_transport
-from ..util.rxutil import generator
+from ..util import rxutil as ix
 
 router = APIRouter(
     prefix="/emits",
@@ -18,14 +18,18 @@ router = APIRouter(
 async def websocket_emits(websocket: WebSocket):
     await websocket.accept()
     try:
-        rx_emits = devices.rx_all_observables.pipe(
-            op.map(emit_to_transport),
-            op.buffer_with_time_or_count(2, 5),
-            op.filter(lambda l: len(l) > 0),
-            op.map(orjson.dumps)
+        rx_emits: rx.AsyncObservable[bytes] = rx.pipe(
+            devices.rx_all_observables,
+            rx.map(emit_to_transport),
+            ix.buffer_with_time(2, 5),
+            rx.filter(lambda l: len(l) > 0),
+            rx.map(orjson.dumps)
         )
-        async for e in generator(rx_emits):
-            await websocket.send_bytes(e)
+        obv = rx.AsyncIteratorObserver(rx_emits)
+        async with await rx_emits.subscribe_async(obv) as subscription:
+            async for e in obv:
+                print( "?")
+                await websocket.send_bytes(e)
     finally:
         await websocket.close()
 

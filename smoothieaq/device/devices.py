@@ -1,20 +1,25 @@
 from typing import Optional
 
 import aioreactive as rx
+from aioreactive.subject import AsyncMultiSubject
 
 from .device import Device, Observable
 from ..div.emit import ObservableEmit, emit_empty
 from ..model import thing as aqt
-from ..util.rxutil import ix
+from ..util.rxutil import ix, trace
 
 devices: dict[str, Device] = dict()
 observables: dict[str, Observable] = dict()
 rx_observables: dict[str, rx.AsyncObservable[ObservableEmit]] = dict()
 
 _rx_all_subject: rx.AsyncSubject[rx.AsyncObservable[ObservableEmit]] = rx.AsyncSubject()
-rx_all_observables: rx.AsyncObservable[ObservableEmit] = rx.pipe(_rx_all_subject, rx.merge_inner())
+rx_all_observables: AsyncMultiSubject[ObservableEmit] = AsyncMultiSubject()
 
 _rx_device_updates: rx.AsyncSubject[aqt.Device] = rx.AsyncSubject()
+
+
+async def init() -> None:
+    _never_dispose = await rx.pipe(_rx_all_subject, rx.merge_inner()).subscribe_async(rx_all_observables)
 
 
 def get_last_emit(observable_id: str) -> ObservableEmit:
@@ -84,6 +89,7 @@ def get_rx_observable(id: str) -> Optional[rx.AsyncObservable[ObservableEmit]]:
 
 
 def get_rx_device_updates() -> rx.AsyncObservable[aqt.Device]:
+    print (devices.values())
     return rx.pipe(  # todo, not really nice, may loose updates
         rx.from_iterable(ix(devices.values()).map(lambda d: d.m_device)),
         rx.concat(_rx_device_updates)

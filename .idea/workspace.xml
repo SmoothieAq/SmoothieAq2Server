@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change afterPath="$PROJECT_DIR$/smoothieaq/device/pausable.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/smoothieaqSys.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/program.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/program.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/emitdrivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/emitdrivers.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/emitdevice/emitdevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/emitdevice/emitdevice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/model/thing.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/thing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/routes/emits.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/routes/emits.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +35,20 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jesper_festina&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SmoothieAq/SmoothieAq2Server.git&quot;,
+    &quot;accountId&quot;: &quot;c0105487-e0bb-4753-a5e4-965687eaf0ad&quot;
+  }
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -44,17 +63,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.SmoothieAq Uvicorn.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/jl/PycharmProjects/SmoothieAq2Server/smoothieaq/driver&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.SmoothieAq Uvicorn.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/jl/PycharmProjects/SmoothieAq2Server",
+    "settings.editor.selected.configurable": "editor.preferences.tabs"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/smoothieaq/driver" />
@@ -119,6 +139,13 @@
       <item itemvalue="Python.SmoothieAq Uvicorn" />
       <item itemvalue="Python.main" />
     </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-fb887030ada0-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.21565.199" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -185,7 +212,15 @@
       <option name="project" value="LOCAL" />
       <updated>1711124089064</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="-">
+      <option name="closed" value="true" />
+      <created>1733660295653</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1733660295653</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

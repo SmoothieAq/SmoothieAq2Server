@@ -193,6 +193,7 @@ class Driver(Named, Described):
 class EmitDeviceFilter:
     id: Optional[str] = None
     statusObservable: Optional[bool] = None
+    type: Optional[str] = None # enum type
     site: Optional[str] = None  # enum site
     place: Optional[str] = None  # enum place
     category: Optional[str] = None  # enum category
