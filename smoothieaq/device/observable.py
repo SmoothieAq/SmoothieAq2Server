@@ -8,7 +8,6 @@ from expression.collections import Map, Block
 from .expression import as_observable
 from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun
 from ..driver.driver import Status as DriverStatus, Driver
-from ..driver.drivers import get_driver
 from ..model import thing as aqt
 from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async, throwIt
 
@@ -30,6 +29,7 @@ class Status(StrEnum):
 def driver_init(driver_ref: aqt.DriverRef, id: str) -> Optional[Driver]:
     if not driver_ref or not driver_ref.id:
         return None
+    from ..driver.drivers import get_driver
     driver = get_driver(driver_ref.id)
     path = driver_ref.path or id
     params = Map.of_block(Block(driver_ref.params or []).map(lambda p: (p.key, p.value)))

@@ -1,11 +1,16 @@
+import logging
+
 import orjson
 from fastapi import WebSocket, APIRouter
 from fastapi.responses import HTMLResponse
 import aioreactive as rx
+from starlette.websockets import WebSocketState, WebSocketDisconnect
 
 from ..device import devices
 from ..div.emit import emit_to_transport
 from ..util import rxutil as ix
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/emits",
@@ -28,10 +33,16 @@ async def websocket_emits(websocket: WebSocket):
         obv = rx.AsyncIteratorObserver(rx_emits)
         async with await rx_emits.subscribe_async(obv) as subscription:
             async for e in obv:
-                print( "?")
-                await websocket.send_bytes(e)
+                if not websocket.client_state == WebSocketState.CONNECTED:
+                    break
+                try:
+                    await websocket.send_bytes(e)
+                except WebSocketDisconnect:
+                    break
+
     finally:
-        await websocket.close()
+        if not websocket.client_state == WebSocketState.DISCONNECTED:
+            await websocket.close()
 
 
 html = """

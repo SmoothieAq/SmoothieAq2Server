@@ -23,7 +23,7 @@ async def test():
         )
     async def e(ex):
         print("error", ex)
-    await dv.rx_all_observables.subscribe_async(p,e)
+    #await dv.rx_all_observables.subscribe_async(p,e)
 
 
     if True:
@@ -55,9 +55,9 @@ async def test():
     if True:
         dl = edr.find_emit_driver("LogEmitDriver")
         edv1 = dl.create_m_device()
-        edv1.enabled = True
+        #edv1.enabled = True
         await edv.create_new_emit_device(edv1)
-    await sleep(120)
+    await sleep(1)
 
     if False:
         mdv1 = create_m_device(dr1)
@@ -106,7 +106,7 @@ async def test():
         mdv3.driver.params[2].value = "0.9"
         await dv.create_new_device(mdv3)
 
-    await sleep(40)
+    #await sleep(40)
 
     # await sleep(4)
     # d.observables['A'].pause()

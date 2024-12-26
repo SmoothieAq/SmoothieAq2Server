@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change afterPath="$PROJECT_DIR$/doc/smoothieaqSys.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/emitdrivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/emitdrivers.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/observable.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/observable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/emitdevice/emitdevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/emitdevice/emitdevice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/thing.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/thing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/routes/emits.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/routes/emits.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +84,7 @@
       <recent name="$PROJECT_DIR$/smoothieaq" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.SmoothieAq Uvicorn">
     <configuration name="SmoothieAq Uvicorn" type="PythonConfigurationType" factoryName="Python">
       <module name="SmoothieAq2Server" />
       <option name="ENV_FILES" value="" />
@@ -220,7 +214,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733660295653</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="-">
+      <option name="closed" value="true" />
+      <created>1735201904256</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1735201904256</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
