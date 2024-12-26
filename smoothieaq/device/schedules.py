@@ -48,12 +48,13 @@ async def schedules(schedules: list[Schedule], device: Device, rx_scheduled: rx.
                 wait = next_time - div_time()
                 # print("!!2", wait, datetime.fromtimestamp(div_time()))
                 if wait > 0.1:
-                    await sleep(duration(min(min_wait, wait)))
+                    await sleep(duration(max(min_wait, wait)))
                 else:
                     await rx_scheduled.asend(RawEmit(enumValue=Status.PROGRAM_RUNNING))
                     log.info(f"On device {device.id}, do program on schedule {schedule.id}")
                     await do_program(device, schedule.program, next_time, cancellation_token)
                     await rx_scheduled.asend(RawEmit(enumValue=Status.SCHEDULE_RUNNING))
+                    break
 
     task = asyncio.create_task(do_schedule(cancellation_token_source.token))
 

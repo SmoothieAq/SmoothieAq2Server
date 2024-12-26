@@ -118,7 +118,7 @@ async def do_program(device: Device, program: Program, wanted_start_time: float,
                 if cancellation.is_cancellation_requested:
                     return
                 # print("$$2", wait, to - now)
-                await sleep(duration(min(min_wait, to - now)))
+                await sleep(duration(max(min_wait, to - now)))
                 now = div_time()
 
             fraction = (now - wanted_start_time) / sub_program.length
