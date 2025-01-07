@@ -5,7 +5,6 @@ from pydantic import Field
 from enum import StrEnum, auto
 
 
-#@dataclass
 class UnaryOp(StrEnum):
     NEGATE = auto()
     NOT = auto()
@@ -14,7 +13,6 @@ class UnaryOp(StrEnum):
         return hash(str(self.value))
 
 
-#@dataclass
 class BinaryOp(StrEnum):
     AND = auto()
     OR = auto()
@@ -34,7 +32,6 @@ class BinaryOp(StrEnum):
         return hash(str(self.value))
 
 
-#@dataclass
 class RxOp0(StrEnum):
     DISTINCT = auto()
 
@@ -42,7 +39,6 @@ class RxOp0(StrEnum):
         return hash(str(self.value))
 
 
-#@dataclass
 class RxOp1(StrEnum):
     DEBOUNCE = auto()
     THROTTLE = auto()

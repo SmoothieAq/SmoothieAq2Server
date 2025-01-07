@@ -33,11 +33,14 @@ _types: dict[str, Type] = {'enums': aqe.Enum, 'drivers': aqt.Driver, 'devices': 
                            'emitDrivers': aqt.EmitDriver, 'emitDevices': aqt.EmitDevice}
 _objects: dict[any, dict[str, any]] = {}
 
-def encode(obj) -> str:
+
+def _encode(obj) -> str:
     return json.dumps(jsonable_encoder(obj, exclude_defaults=True, exclude_none=True, exclude_unset=True))
+
 
 def _decode(typ: Type, obj: str):
     return RootModel[typ].model_validate_json(obj).root
+
 
 async def _load_type_from_yaml_file[T](typ: Type[T], file: str) -> Seq[T]:
     file = Path(f"resources/{file}.yaml")
@@ -56,12 +59,10 @@ async def load() -> None:
             objects: Seq[typ] = await _load_type_from_yaml_file(typ, typ_name)
             _objects[typ] = dict(objects.map(lambda e: (e.id, e)))
             for o in objects:
-                #await persister.create(typ, o.id, RootModel(o).model_dump_json(exclude_defaults=True))
-                await persister.create(typ, o.id, encode(o))
+                await persister.create(typ, o.id, _encode(o))
     else:
         for typ in _types.values():
             _objects[typ] = dict((await persister.get_all(typ))
-                #.map(lambda s: RootModel[typ].model_validate_json(s).root).map(p)
                 .map(lambda s: _decode(typ, s))
                 .map(lambda e: (e.id, e)))
 
@@ -75,14 +76,12 @@ async def get[T](typ: Type[T], id: str) -> T:
 
 
 async def put[T](typ: Type[T], id: str, object: T) -> None:
-    #await persister.create(typ, id, RootModel(object).model_dump_json(exclude_defaults=True))
-    await persister.create(typ, id, encode(object))
+    await persister.create(typ, id, _encode(object))
     _objects[typ][id] = object
 
 
 async def replace[T](typ: Type[T], id: str, object: T) -> None:
-    #await persister.update(typ, id, RootModel(object).model_dump_json(exclude_defaults=True))
-    await persister.update(typ, id, encode(object))
+    await persister.update(typ, id, _encode(object))
     _objects[typ][id] = object
 
 
