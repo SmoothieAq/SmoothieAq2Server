@@ -2,12 +2,13 @@ from typing import Optional
 
 import aioreactive as rx
 from aioreactive.subject import AsyncMultiSubject
+from expression.collections import Seq
 
-from ..div import objectstore as os
+from ..modelobject import objectstore as os
 from .device import Device, Observable
 from ..div.emit import ObservableEmit, emit_empty
 from ..model import thing as aqt
-from ..util.rxutil import ix, trace
+from ..util.rxutil import ix
 
 devices: dict[str, Device] = dict()
 observables: dict[str, Observable] = dict()
@@ -27,7 +28,7 @@ def get_last_emit(observable_id: str) -> ObservableEmit:
     return emit_empty(observable_id)  # TODO
 
 async def add_devices() -> None:
-    for m_device in os.get_all(aqt.Device):
+    for m_device in await os.get_all(aqt.Device):
         await _add_device(m_device)
 
 async def _add_device(m_device: aqt.Device, start: bool = True) -> None:
@@ -104,6 +105,10 @@ def get_rx_observable(id: str) -> Optional[rx.AsyncObservable[ObservableEmit]]:
     if not rx_observables.__contains__(id):
         return None
     return rx_observables[id]
+
+
+def get_devices() -> Seq[aqt.Device]:
+    return ix(devices.values())
 
 
 def get_rx_device_updates() -> rx.AsyncObservable[aqt.Device]:

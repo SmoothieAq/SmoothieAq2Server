@@ -1,14 +1,13 @@
 # This is a sample Python script.
-import asyncio
+import os
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-from smoothieaq.enumtest import *
 from smoothieaq.rxtest import *
 from smoothieaq.devtest import *
 from smoothieaq.bletest import *
-from smoothieaq.div import objectstore as os, time as t
+from smoothieaq.modelobject import objectstore as store
 import logging
 
 
@@ -24,7 +23,7 @@ async def doit():
     logging.getLogger("smoothieaq.emitdevice").setLevel(logging.DEBUG)
     logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
     logging.info("info")
-    await os.load()
+    await store.load()
     await sleep(1)
     #t.simulate(speed=10)
     await test()

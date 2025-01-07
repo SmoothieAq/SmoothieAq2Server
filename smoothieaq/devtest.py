@@ -23,11 +23,11 @@ async def test():
         )
     async def e(ex):
         print("error", ex)
-    await dv.rx_all_observables.subscribe_async(p,e)
+    #await dv.rx_all_observables.subscribe_async(p,e)
 
 
     if True:
-        drch = dr.get_m_driver("Chihiros2LedDriver")
+        drch = await dr.get_m_driver("Chihiros2LedDriver")
         mdvch = create_m_device(drch, aqt.DriverRef(path="C21C06F8-D0E0-DC60-7D78-D8BBFCF23DAD"))
         dvch = await dv.create_new_device(mdvch)
 
@@ -47,13 +47,13 @@ async def test():
     await sleep(4)
 
     if False:
-        dr1 = dr.get_m_driver("DummyDriver")
-        dr2 = dr.get_m_driver("PsutilDriver")
-        dr3 = dr.get_m_driver("MemoryMeasureDriver")
-        dr4 = dr.get_m_driver("MemoryStateDriver")
+        dr1 = await dr.get_m_driver("DummyDriver")
+        dr2 = await dr.get_m_driver("PsutilDriver")
+        dr3 = await dr.get_m_driver("MemoryMeasureDriver")
+        dr4 = await dr.get_m_driver("MemoryStateDriver")
 
     if True:
-        dl = edr.find_emit_driver("LogEmitDriver")
+        dl = await edr.find_emit_driver("LogEmitDriver")
         edv1 = dl.create_m_device()
         #edv1.enabled = True
         await edv.create_new_emit_device(edv1)
@@ -79,7 +79,7 @@ async def test():
         cast(aqt.Measure, mdv1.observables[0]).require = require
         await dv.create_new_device(mdv1)
 
-    await dv.create_new_device(create_m_device(dr.get_m_driver("TimeDriver")))
+    await dv.create_new_device(create_m_device(await dr.get_m_driver("TimeDriver")))
 
     if False:
         mdv2 = create_m_device(dr2)

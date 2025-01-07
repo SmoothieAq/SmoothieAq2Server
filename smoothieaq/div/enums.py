@@ -1,4 +1,4 @@
-from smoothieaq.div import objectstore
+from smoothieaq.modelobject import objectstore
 from smoothieaq.model.enum import Enum, EnumSimple, QuantityType, Unit
 from smoothieaq.util.rxutil import ix
 
@@ -6,8 +6,8 @@ enums: dict[str, EnumSimple] = dict()
 quantities: dict[str, QuantityType] = dict()
 
 
-def load():
-    for e in objectstore.get_all(Enum):
+async def load():
+    for e in await objectstore.get_all(Enum):
         match e:
             case EnumSimple():
                 enums[e.id] = e

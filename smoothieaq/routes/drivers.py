@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("/", response_model_exclude_none=True)
 async def get_drivers() -> list[aqt.Driver]:
     """
     Get basic information on all drivers.
@@ -28,23 +28,23 @@ async def get_drivers() -> list[aqt.Driver]:
         d.templateDevice = None
         return d
 
-    return list(map(driver_without_template_device, get_m_drivers()))
+    return list(map(driver_without_template_device, await get_m_drivers()))
 
 
-@router.get("/{driver_id}")
+@router.get("/{driver_id}", response_model_exclude_none=True)
 async def get_driver(
         driver_id: str,
         accept_language: Annotated[str | None, Header()] = None
 ) -> aqt.Driver:
     print("***", accept_language)
     try:
-        return get_m_driver(driver_id)
+        return await get_m_driver(driver_id)
     except KeyError:
         raise HTTPException(404, f"Driver {driver_id} not found")
 
 
 @router.post("/")
-async def post_driver(driver: aqt.Driver) -> None:
+async def post_driver(driver: aqt.Driver) -> str:
     return await put_m_driver(driver)
 
 
