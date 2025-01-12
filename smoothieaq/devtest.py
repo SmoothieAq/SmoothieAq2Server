@@ -25,6 +25,12 @@ async def test():
         print("error", ex)
     #await dv.rx_all_observables.subscribe_async(p,e)
 
+    if True:
+        sl = await edr.find_emit_driver("SqliteEmitDriver")
+        slv1 = sl.create_m_device()
+        #slv1.enabled = True
+        await edv.create_new_emit_device(slv1)
+    await sleep(1)
 
     if True:
         drch = await dr.get_m_driver("Chihiros2LedDriver")

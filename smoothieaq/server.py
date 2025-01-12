@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import drivers, devices, emits, tests
+
+#from .device.devices import observables
+from .routes import drivers, devices, emits, observables, tests
 from .modelobject import objectstore as ostore
 from contextlib import asynccontextmanager
 
@@ -39,6 +41,7 @@ app.add_middleware(
 app.include_router(drivers.router)
 app.include_router(devices.router)
 app.include_router(emits.router)
+app.include_router(observables.router)
 app.include_router(tests.router)
 
 

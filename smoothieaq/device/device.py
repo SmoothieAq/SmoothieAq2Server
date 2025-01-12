@@ -4,7 +4,7 @@ from typing import Optional
 import aioreactive as rx
 
 from .observable import Observable, driver_init, Status, Measure, Amount, State, Event
-from ..div.emit import ObservableEmit, RawEmit, emit_enum_value, emit_raw_fun
+from ..div.emit import ObservableEmit, RawEmit, emit_enum_value, emit_raw_fun, emit_empty
 from ..driver.driver import Driver, Status as DriverStatus
 from ..model import thing as aqt
 from ..util.rxutil import AsyncBehaviorSubject, publish, throwIt
@@ -27,6 +27,7 @@ class Device:
         self._rx_all_subject = rx.AsyncSubject[rx.AsyncObservable[ObservableEmit]]()
         self.rx_all_observables: Optional[rx.AsyncObservable[ObservableEmit]] = None
         self._disposables: list[rx.AsyncDisposable] = []
+        self.current_status: ObservableEmit = emit_empty(self.id)
 
     async def pause(self, paused: bool = True) -> None:
         log.info(f"doing device.pause({self.id},{paused})")
@@ -118,6 +119,8 @@ class Device:
         ]:
             self._disposables.append(await o.subscribe_async(throw=throwIt(t)))
             self._disposables.append(await o.connect())
+        async def set_status(s: ObservableEmit) -> None: self.current_status = s
+        self._disposables.append(await self.rx_status_observable.subscribe_async(set_status))
         for o in self.observables.values():
             await o.start()
 

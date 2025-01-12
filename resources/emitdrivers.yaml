@@ -12,3 +12,23 @@
     enabled: false
     exclude:
       - type: time
+- id: SqliteEmitDriver
+  name: Sqlite emit driver
+  description: |-
+    Logs into Sqlite table smoothieaq-emits
+  paramDescriptions:
+    - id: SqliteEmitDriver.p1
+      key: db_file
+      defaultValue:
+      description: |-
+        Filename to db file, can be absolute or relative path
+  templateDevice:
+    id: SqliteEmitDriver
+    type: external
+    driver:
+      id: SqliteEmitDriver
+    operations:
+      - emit
+    enabled: true
+    exclude:
+      - type: time

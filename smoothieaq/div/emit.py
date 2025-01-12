@@ -77,3 +77,7 @@ def emit_to_transport(emit: ObservableEmit) -> list[str]:
         return [emit.observable_id, stamp, value, emit.enumValue]
     else:
         return [emit.observable_id, stamp, value]
+
+
+def emit_to_raw(emit: RawEmit) -> RawEmit:
+    return RawEmit(emit.value, emit.enumValue, emit.note)

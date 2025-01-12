@@ -49,5 +49,5 @@ async def post_driver(driver: aqt.Driver) -> str:
 
 
 @router.put("/{driver_id}")
-async def put_driver(driver: aqt.Driver) -> None:
+async def put_driver(driver_id: str, driver: aqt.Driver) -> None:
     await update_m_driver(driver)

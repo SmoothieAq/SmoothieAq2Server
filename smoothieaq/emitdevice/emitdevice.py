@@ -31,10 +31,11 @@ class EmitDevice:
         await self.pause(False)
 
     async def driver_init(self, driver_ref: aqt.DriverRef, id: str) -> EmitDriver:
-        driver = find_emit_driver(driver_ref.id)
+        driver = await find_emit_driver(driver_ref.id)
         path = driver_ref.path or id
         params = dict(map(lambda p: (p.key, p.value), driver_ref.params or []))
-        return await driver.init(path, params)
+        await driver.init(path, params)
+        return driver
 
     async def update_filter(self, m_device: aqt.Device) -> None:
         def include(id: str, status: bool, t1: tuple[str, str, str, str], t2: tuple[str, str, str, str]) -> bool:
@@ -77,15 +78,17 @@ class EmitDevice:
 
     async def start(self):
         log.info(f"doing emitdevice.start({self.id})")
+        await self.driver.start()
         self._disposables.append(await rx.pipe(get_rx_device_updates(), trace()).subscribe_async(self.update_filter))
         o = rx.pipe(
             rx_all_observables,
             rx.filter(lambda e: self.filter.get(e.observable_id, True)),
-            buffer_with_time(self.m_emit_device.bufferTime or 0.5, self.m_emit_device.bufferNo or 10)
+            buffer_with_time(self.m_emit_device.bufferTime or 0.5, self.m_emit_device.bufferNo or 1000)
         )
         self._disposables.append(await o.subscribe_async(self.driver.emit))
 
     async def stop(self):
         log.info(f"doing emitdevice.stop({self.id})")
+        await self.driver.stop()
         for disposable in self._disposables:
             await disposable.dispose_async()

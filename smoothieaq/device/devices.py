@@ -95,13 +95,13 @@ def get_rx_observable(id: str) -> Optional[rx.AsyncObservable[ObservableEmit]]:
         c = id.find(":")
         type = id[1:c-1]
         cid = id[c+1:len(id)-1]
-        print("!",type,cid)
+        #print("!",type,cid)
         for d in devices.values():
             if d.m_device.type == type:
                 return get_rx_observable(d.m_device.id + ':' + cid)
         from .observable import log
         log.error(f"Could not find {id}")
-        raise Exception(f"Could not find {id}")
+        raise KeyError(f"Could not find {id}")
     if not rx_observables.__contains__(id):
         return None
     return rx_observables[id]
@@ -112,7 +112,7 @@ def get_devices() -> Seq[aqt.Device]:
 
 
 def get_rx_device_updates() -> rx.AsyncObservable[aqt.Device]:
-    print (devices.values())
+    #print (devices.values())
     return rx.pipe(  # todo, not really nice, may loose updates
         rx.from_iterable(ix(devices.values()).map(lambda d: d.m_device)),
         rx.concat(_rx_device_updates)

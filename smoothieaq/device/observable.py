@@ -6,7 +6,7 @@ import aioreactive as rx
 from expression.collections import Map, Block
 
 from .expression import as_observable
-from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun
+from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun, emit_empty
 from ..driver.driver import Status as DriverStatus, Driver
 from ..model import thing as aqt
 from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async, throwIt
@@ -74,6 +74,8 @@ class Observable[MO: aqt.AbstractObservable]:
         self._rx_paused = AsyncBehaviorSubject(self.paused)
         self._rx_require: rx.AsyncObservable[RawEmit] = AsyncBehaviorSubject(RawEmit(enumValue=Status.RUNNING))
         self._disposables: list[rx.AsyncDisposable] = []
+        self.current_value: ObservableEmit = emit_empty(self.id)
+        self.current_status: ObservableEmit = emit_empty(self.id)
 
     async def pause(self, paused: bool = True) -> None:
         assert self.enabled()
@@ -188,6 +190,11 @@ class Observable[MO: aqt.AbstractObservable]:
         ]:
             self._disposables.append(await o.subscribe_async(throw=throwIt(t)))
             self._disposables.append(await o.connect())
+        async def set_curr(o: ObservableEmit) -> None: self.current_value = o
+        self._disposables.append(await self.rx_observable.subscribe_async(set_curr))
+        async def set_status(s: ObservableEmit) -> None: self.current_status = s
+        self._disposables.append(await self.rx_status_observable.subscribe_async(set_status))
+
 
     async def stop(self) -> None:
         log.info(f"doing observable.stop({self.id})")

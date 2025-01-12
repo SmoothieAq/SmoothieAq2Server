@@ -29,6 +29,12 @@ class EmitDriver:
         self._init()
         return self
 
+    async def start(self) -> None:
+        pass
+
+    async def stop(self) -> None:
+        pass
+
     async def emit(self, emits: list[ObservableEmit]) -> None:
         log.error("emit() not implemented")
         raise Exception("emit() not implemented")
