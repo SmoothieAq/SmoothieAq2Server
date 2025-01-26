@@ -41,7 +41,7 @@ class Driver[H: Hal]:
     async def discover_device_paths(self) -> list[str]:
         return []
 
-    async def _status(self, status: Status, note: str = None):
+    async def set_status(self, status: Status, note: str = None):
         self.status = status
         await self._rx_status_observer.asend(RawEmit(enumValue=status, note=note))
 
@@ -66,10 +66,10 @@ class Driver[H: Hal]:
 
     async def start(self) -> None:
         log.debug(f"doing driver.start({self.id}/{self.path})")
-        await self._status(Status.STARTING)
+        await self.set_status(Status.STARTING)
         if self.hal:
             async def error_handler(note: str):
-                await self._status(Status.IN_ERROR, note=note)
+                await self.set_status(Status.IN_ERROR, note=note)
             self.hal.init(self.path, self.params, error_handler)
             await self.hal.start()
 
@@ -83,7 +83,7 @@ class Driver[H: Hal]:
 
     async def stop(self) -> None:
         log.debug(f"doing driver.stop({self.id}/{self.path})")
-        await self._status(Status.CLOSING)
+        await self.set_status(Status.CLOSING)
         if self.hal:
             await self.hal.stop()
 

@@ -33,7 +33,7 @@ class PsutilDriver(PollingDriver[NoHal]):
 
     async def start(self) -> None:
         await super().start()
-        await self._status(Status.RUNNING)
+        await self.set_status(Status.RUNNING)
 
     async def poll(self) -> None:
 

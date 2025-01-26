@@ -21,6 +21,7 @@ class Unit(EnumValueBase):
     relTimes: Optional[float] = None
     relAdd: Optional[float] = None
     relUnit: Optional[str] = None
+    geoArea: Optional[str] = None # enum geoArea
 
 
 EnumValue = Annotated[(EnumValueSimple | Unit), Field(discriminator='type')]

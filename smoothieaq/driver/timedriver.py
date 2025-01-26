@@ -36,7 +36,7 @@ class TimeDriver(Driver[NoHal]):
             return _tick
 
         self.polling_disposable = await rx.timer(first - t.time()).subscribe_async(tick(first))
-        await self._status(Status.RUNNING)
+        await self.set_status(Status.RUNNING)
 
     async def stop(self) -> None:
         await super().stop()

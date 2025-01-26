@@ -3,6 +3,7 @@ from asyncio import sleep
 from typing import cast
 
 import smoothieaq.model.expression as ex
+import smoothieaq.model.step as st
 from smoothieaq.device import devices as dv
 from smoothieaq.device.device import *
 from smoothieaq.driver import drivers as dr
@@ -15,24 +16,25 @@ import time as t
 
 async def test():
 
-    time.simulate(start_time=datetime.time(8,25), speed=60, minDuration=0.5)
+    #time.simulate(start_time=datetime.time(8,25), speed=60, minDuration=0.5)
+    time.simulate(start_time=datetime.time(8,25), speed=5, minDuration=0.5)
 
     async def p(e):
         print(
-            f"{e.observable_id}: {e.value or ''}{e.enumValue or ''} {e.note or ''} ({t.strftime('%Y/%m/%d %H:%M:%S', t.localtime(e.stamp))}) {e.stamp}"
+            f"{e.observable_id}: {e.value or ''} {e.enumValue or ''} {e.note or ''} ({t.strftime('%Y/%m/%d %H:%M:%S', t.localtime(e.stamp))}) {e.stamp}"
         )
     async def e(ex):
         print("error", ex)
-    #await dv.rx_all_observables.subscribe_async(p,e)
+    await dv.rx_all_observables.subscribe_async(p,e)
 
-    if True:
+    if False:
         sl = await edr.find_emit_driver("SqliteEmitDriver")
         slv1 = sl.create_m_device()
         #slv1.enabled = True
         await edv.create_new_emit_device(slv1)
-    await sleep(1)
+        await sleep(1)
 
-    if True:
+    if False:
         drch = await dr.get_m_driver("Chihiros2LedDriver")
         mdvch = create_m_device(drch, aqt.DriverRef(path="C21C06F8-D0E0-DC60-7D78-D8BBFCF23DAD"))
         dvch = await dv.create_new_device(mdvch)
@@ -50,22 +52,22 @@ async def test():
         #    await cast(Amount, dv.get_observable(dvch + ":G2")).set_value(float(i))
         #    await sleep(0.5)
 
-    await sleep(4)
+        await sleep(4)
 
-    if False:
+    if True:
         dr1 = await dr.get_m_driver("DummyDriver")
         dr2 = await dr.get_m_driver("PsutilDriver")
         dr3 = await dr.get_m_driver("MemoryMeasureDriver")
         dr4 = await dr.get_m_driver("MemoryStateDriver")
 
-    if True:
+    if False:
         dl = await edr.find_emit_driver("LogEmitDriver")
         edv1 = dl.create_m_device()
         #edv1.enabled = True
         await edv.create_new_emit_device(edv1)
-    await sleep(1)
+        await sleep(1)
 
-    if False:
+    if True:
         mdv1 = create_m_device(dr1)
         mdv1.driver.params[0].value = "5"
         mdv1.driver.params[1].value = "7.2"
@@ -77,13 +79,28 @@ async def test():
         require.warningAbove = 7.6
         require.alarmAbove = 7.8
         require.alarmConditions = []
-        condition = aqt.Condition
+        condition = aqt.Condition()
         condition.description = "Not good"
-        condition.condition = ex.BinaryOpExpr(expr1=ex.ObservableExpr(observableRef="1:A"), op=ex.BinaryOp.LT, expr2=ex.ValueExpr(6.4))
+        condition.condition = ex.BinaryOpExpr(expr1=ex.ObservableExpr(observableRef="1:A"), op=ex.BinaryOp.LT, expr2=ex.ValueExpr(6.8))
         require.alarmConditions.append(condition)
         cast(aqt.Measure, mdv1.observables[0]).emitControl = control
         cast(aqt.Measure, mdv1.observables[0]).require = require
+        action = aqt.Action(id='X1', steps=[st.WaitStep(id='wait', timeToWait=3), st.PollStep(id='poll', observableRef='1')])
+        mdv1.observables.append(action)
+        chore = aqt.Chore(id='C1', steps=[st.WaitStep(id='wait', timeToWait=1), st.DoneStep(id='done')])
+        mdv1.observables.append(chore)
         await dv.create_new_device(mdv1)
+
+        await sleep(3)
+        #await dv.observables['1:X1'].async_do_action()
+        #await dv.observables['1:C1'].skip()
+        #await dv.observables['1:C1'].delay()
+        #await dv.observables['1:C1'].done()
+        await dv.observables['1:C1'].start_chore()
+        await sleep(2)
+        await dv.observables['1:C1'].input('done', RawEmit())
+
+        #await sleep(9)
 
     await dv.create_new_device(create_m_device(await dr.get_m_driver("TimeDriver")))
 
@@ -112,7 +129,7 @@ async def test():
         mdv3.driver.params[2].value = "0.9"
         await dv.create_new_device(mdv3)
 
-    #await sleep(40)
+    await sleep(20)
 
     # await sleep(4)
     # d.observables['A'].pause()

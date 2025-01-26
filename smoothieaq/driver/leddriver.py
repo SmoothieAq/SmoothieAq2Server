@@ -50,7 +50,7 @@ class LedDriver(Driver[NPwmHal]):
 
     async def start(self) -> None:
         await super().start()
-        await self._status(Status.RUNNING)
+        await self.set_status(Status.RUNNING)
 
     async def set(self, rx_key: str, emit: RawEmit) -> None:
         log.debug(f"doing LedDriver.set({self.id}/{self.path}, {rx_key}, {emit})")
@@ -81,5 +81,5 @@ class LedDriver(Driver[NPwmHal]):
             await self.hal.set_pwm(color_led.no, value / 100)
         except Exception as ex:
             log.error(f"error on {self.path}",exc_info=ex)
-            await self._status(Status.IN_ERROR, f"send error {ex}")
+            await self.set_status(Status.IN_ERROR, f"send error {ex}")
         await self._rx_observers[color_led.id].asend(RawEmit(value=value))

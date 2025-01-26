@@ -5,6 +5,7 @@
   templateDevice:
     id: LogEmitDriver
     type: external
+    category: aux
     driver:
       id: LogEmitDriver
     operations:
@@ -24,7 +25,8 @@
         Filename to db file, can be absolute or relative path
   templateDevice:
     id: SqliteEmitDriver
-    type: external
+    type: internal
+    category: primary
     driver:
       id: SqliteEmitDriver
     operations:

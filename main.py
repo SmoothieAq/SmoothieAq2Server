@@ -20,7 +20,7 @@ async def doit():
     logging.getLogger().setLevel(logging.INFO)
     logging.getLogger("smoothieaq").setLevel(logging.INFO)
     logging.getLogger("smoothieaq.hal").setLevel(logging.DEBUG)
-    logging.getLogger("smoothieaq.emitdevice").setLevel(logging.DEBUG)
+    logging.getLogger("smoothieaq.device").setLevel(logging.INFO)
     logging.getLogger("smoothieaq.driver.driver").setLevel(logging.INFO)
     logging.info("info")
     await store.load()

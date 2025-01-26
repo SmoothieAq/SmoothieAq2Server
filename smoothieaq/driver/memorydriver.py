@@ -19,7 +19,7 @@ class MemoryDriver(Driver[NoHal]):
 
     async def start(self) -> None:
         await super().start()
-        await self._status(Status.RUNNING)
+        await self.set_status(Status.RUNNING)
 
     async def set(self, rx_key: str, emit: RawEmit) -> None:
         log.debug(f"doing driver.set({self.id}/{self.path}, {rx_key}, {emit})")

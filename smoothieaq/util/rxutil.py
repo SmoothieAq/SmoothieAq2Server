@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from asyncio import sleep
 from typing import Callable, TypeVar, Iterable, Optional, NoReturn, Awaitable
@@ -298,21 +299,32 @@ def trace(
 
 async def take_first[T](obs: AsyncObservable[T], do: Callable[[T], None]) -> None:
     async def do_it(t: T) -> None:
-        do(t)
-        await disposable.dispose_async()
+        try:
+            do(t)
+        finally:
+            await disposable.dispose_async()
 
     disposable = await rx.pipe(obs, rx.take(1)).subscribe_async(do_it)
 
 
 async def take_first_async[T](obs: AsyncObservable[T], do: Callable[[T], Awaitable[None]]) -> None:
     async def do_it(t: T) -> None:
-        await do(t)
-        await disposable.dispose_async()
+        try:
+            await do(t)
+        finally:
+            await disposable.dispose_async()
 
     disposable = await rx.pipe(obs, rx.take(1)).subscribe_async(do_it)
 
 
-def throwIt(txt: str):
+async def await_first[T](obs: AsyncObservable[T]) -> T:
+    fut: asyncio.Future[T] = asyncio.get_running_loop().create_future()
+    def _fut(t: T): fut.set_result(t)
+    await take_first(obs, _fut)
+    return await fut
+
+
+def throw_it(txt: str):
     async def _err(ex: Exception):
         print(f"!!! {txt} {self.id}", ex)
         log.error(f"{txt} {self.id}", exc_info=ex)
@@ -320,7 +332,7 @@ def throwIt(txt: str):
     return _err
 
 
-def printIt(txt: str):
+def print_it(txt: str):
     async def _print(e):
         print(f"!!! {txt} {self.id}", e)
 

@@ -3,11 +3,11 @@ from typing import Optional
 
 import aioreactive as rx
 
-from .observable import Observable, driver_init, Status, Measure, Amount, State, Event
+from .observable import Observable, driver_init, Status, Measure, Amount, State, Event, Action, Chore
 from ..div.emit import ObservableEmit, RawEmit, emit_enum_value, emit_raw_fun, emit_empty
 from ..driver.driver import Driver, Status as DriverStatus
 from ..model import thing as aqt
-from ..util.rxutil import AsyncBehaviorSubject, publish, throwIt
+from ..util.rxutil import AsyncBehaviorSubject, publish, throw_it
 
 log = logging.getLogger(__name__)
 
@@ -93,6 +93,10 @@ class Device:
                 o = State()
             elif isinstance(mo, aqt.Event):
                 o = Event()
+            elif isinstance(mo, aqt.Action):
+                o = Action()
+            elif isinstance(mo, aqt.Chore):
+                o = Chore()
             else:
                 log.error(f"On device {self.id} - Unknown type of Observable {type(mo)}")
                 raise Exception(f"Unknown type of Observable {type(mo)}")
@@ -117,7 +121,7 @@ class Device:
         for t, o in [
             ("rx_status", self.rx_status_observable),
         ]:
-            self._disposables.append(await o.subscribe_async(throw=throwIt(t)))
+            self._disposables.append(await o.subscribe_async(throw=throw_it(t)))
             self._disposables.append(await o.connect())
         async def set_status(s: ObservableEmit) -> None: self.current_status = s
         self._disposables.append(await self.rx_status_observable.subscribe_async(set_status))
@@ -139,6 +143,7 @@ class Device:
         self._disposables = []
 
     async def poll(self) -> None:
+        log.info(f"doing device.poll({self.id})")
         assert self.m_device.enabled is not False
         await self.driver.poll()
 

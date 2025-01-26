@@ -54,7 +54,7 @@ class ChihirosLedDriver(Driver):
         await super().start()
         if not is_simulating():
             await self.hal.start()
-        await self._status(Status.RUNNING)
+        await self.set_status(Status.RUNNING)
 
     async def stop(self) -> None:
         if not is_simulating():

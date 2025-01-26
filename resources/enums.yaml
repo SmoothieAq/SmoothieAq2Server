@@ -78,6 +78,24 @@
     - type: EnumValueSimple
       id: calibrate
       name: Calibrate
+    - type: EnumValueSimple
+      id: do_action
+      name: Execute steps on an action synchronously
+    - type: EnumValueSimple
+      id: async_do_action
+      name: Execute steps on an action asynchronously
+    - type: EnumValueSimple
+      id: do_chore
+      name: Execute steps on an chore asynchronously with possible input
+    - type: EnumValueSimple
+      id: done
+      name: Chore is done
+    - type: EnumValueSimple
+      id: skip
+      name: Skip a chore
+    - type: EnumValueSimple
+      id: delay
+      name: Delay a chore
 - type: EnumSimple
   id: emitOperation
   name: Emit device operation
@@ -216,6 +234,65 @@
     - type: EnumValueSimple
       id: param
       name: Parameter
+- type: EnumSimple
+  id: geoArea
+  name: Geographical area for units
+  values:
+    - type: EnumValueSimple
+      id: all
+      name: Common in all areas
+    - type: EnumValueSimple
+      id: imperial
+      name: Common in Imperial areas
+    - type: EnumValueSimple
+      id: us
+      name: Common in the US
+    - type: EnumValueSimple
+      id: imperial/us
+      name: Common in the US and in Imperial areas
+    - type: EnumValueSimple
+      id: europe
+      name: Common in Europe
+    - type: EnumValueSimple
+      id: scientific
+      name: Scientific unit
+- type: QuantityType
+  id: time
+  name: Time
+  values:
+    - type: Unit
+      id: s
+      name: second
+    - type: Unit
+      id: m
+      name: minute
+      relTimes: 60
+      relUnit: s
+    - type: Unit
+      id: h
+      name: hour
+      relTimes: 60
+      relUnit: m
+    - type: Unit
+      id: d
+      name: day
+      relTimes: 24
+      relUnit: h
+    - type: Unit
+      id: w
+      name: week
+      relTimes: 7
+      relUnit: d
+    - type: Unit
+      id: Y
+      name: year
+      relTimes: 365
+      relUnit: d
+    - type: Unit
+      id: M
+      name: month
+      relTimes: 0.08333
+      relUnit: s
 - type: QuantityType
   id: length
   name: Length
@@ -223,30 +300,224 @@
     - type: Unit
       id: m
       name: meter
+      geoArea: europe
     - type: Unit
       id: cm
       name: centimeter
       relTimes: 0.01
       relUnit: m
+      geoArea: europe
+    - type: Unit
+      id: mm
+      name: millimeter
+      relTimes: 0.01
+      relUnit: cm
+    - type: Unit
+      id: in
+      name: inch
+      relTimes: 2.54
+      relUnit: cm
+      geoArea: imperial/us
+    - type: Unit
+      id: ft
+      name: foot
+      relTimes: 12
+      relUnit: in
+      geoArea: imperial/us
+    - type: Unit
+      id: yd
+      name: yard
+      relTimes: 3
+      relUnit: ft
+      geoArea: imperial/us
 - type: QuantityType
-  id: fraction
-  name: Fraction
+  id: area
+  name: Area
   values:
     - type: Unit
-      id: _fraction
-      name: fraction
+      id: m2
+      name: square meter
+      geoArea: europe
     - type: Unit
-      id: "%"
-      name: percentage
-      relTimes: 100
-      relUnit: _fraction
+      id: cm2
+      name: square centimeter
+      relTimes: 0.0001
+      relUnit: m2
+      geoArea: europe
+    - type: Unit
+      id: mm2
+      name: square millimeter
+      relTimes: 0.0001
+      relUnit: cm2
+    - type: Unit
+      id: in2
+      name: square inch
+      relTimes: 6.3504
+      relUnit: cm2
+      geoArea: imperial/us
+    - type: Unit
+      id: ft2
+      name: square foot
+      relTimes: 144
+      relUnit: in2
+      geoArea: imperial/us
+    - type: Unit
+      id: yd2
+      name: square yard
+      relTimes: 9
+      relUnit: ft2
+      geoArea: imperial/us
+- type: QuantityType
+  id: volume
+  name: Volume
+  values:
+    - type: Unit
+      id: m3
+      name: cube meter
+      geoArea: europe
+    - type: Unit
+      id: cm3
+      name: cube centimeter
+      relTimes: 0.000001
+      relUnit: m3
+      geoArea: europe
+    - type: Unit
+      id: mm3
+      name: cube millimeter
+      relTimes: 0.000001
+      relUnit: cm3
+    - type: Unit
+      id: in3
+      name: cube inch
+      relTimes: 16.13
+      relUnit: cm3
+      geoArea: imperial/us
+    - type: Unit
+      id: ft3
+      name: cube foot
+      relTimes: 1728
+      relUnit: in3
+      geoArea: imperial/us
+    - type: Unit
+      id: yd3
+      name: cube yard
+      relTimes: 27
+      relUnit: ft3
+      geoArea: imperial/us
+    - type: Unit
+      id: L
+      name: liter
+      relTimes: 1000
+      relUnit: cm3
+      geoArea: europe
+    - type: Unit
+      id: dL
+      name: deciliter
+      relTimes: 0.1
+      relUnit: L
+      geoArea: europe
+    - type: Unit
+      id: cL
+      name: centiliter
+      relTimes: 0.1
+      relUnit: dL
+      geoArea: europe
+    - type: Unit
+      id: mL
+      name: milliliter
+      relTimes: 0.1
+      relUnit: cL
+      geoArea: europe
+    - type: Unit
+      id: gal_us
+      name: gallon_us
+      relTimes: 231
+      relUnit: in3
+      geoArea: us
+    - type: Unit
+      id: gal_im
+      name: gallon_im
+      relTimes: 4.54609
+      relUnit: L
+      geoArea: imperial
+    - type: Unit
+      id: pt_us
+      name: pint_us
+      relTimes: 0.125
+      relUnit: gal_us
+      geoArea: us
+    - type: Unit
+      id: pt_im
+      name: pint_im
+      relTimes: 0.125
+      relUnit: gal_im
+      geoArea: imperial
+- type: QuantityType
+  id: weight
+  name: Weight
+  values:
+    - type: Unit
+      id: kg
+      name: kilogram
+    - type: Unit
+      id: g
+      name: gram
+      relTimes: 0.001
+      relUnit: kg
+    - type: Unit
+      id: mg
+      name: milligram
+      relTimes: 0.001
+      relUnit: g
+    - type: Unit
+      id: ib
+      name: pound
+      relTimes: 0.453
+      relUnit: kg
+      geoArea: imperial/us
+    - type: Unit
+      id: ou
+      name: ounce
+      relTimes: 0.0625
+      relUnit: ib
+      geoArea: imperial/us
 - type: QuantityType
   id: temp
   name: Temperature
   values:
     - type: Unit
-      id: "°C"
-      name: degrees Celsius
+      id: K
+      name: kelvin
+    - type: Unit
+      id: °F
+      name: degrees fahrenheit
+      relAdd: 459.67
+      relTimes: 0.55555
+      relUnit: K
+      geoArea: imperial/us
+    - type: Unit
+      id: °C
+      name: degrees celsius
+      relAdd: 273.15
+      relUnit: K
+      geoArea: imperial/us
+- type: QuantityType
+  id: fraction
+  name: Fraction or concentration
+  values:
+    - type: Unit
+      id: _fraction
+      name: fraction
+    - type: Unit
+      id: ppm
+      name: parts-per-million
+      relTimes: 1000000
+      relUnit: _fraction
+    - type: Unit
+      id: "%"
+      name: percentage
+      relTimes: 100
+      relUnit: _fraction
 - type: QuantityType
   id: luminousFlux
   name: Luminosity
@@ -254,6 +525,39 @@
     - type: Unit
       id: lm
       name: lumen
+- type: QuantityType
+  id: pH
+  name: acidity
+  values:
+    - type: Unit
+      id: pH
+      name: pH
+- type: QuantityType
+  id: KH
+  name: carbonate hardness
+  values:
+    - type: Unit
+      id: ppm KH
+      name: parts-per-million KH
+    - type: Unit
+      id: °dKH
+      name: degrees KH
+      relTimes: 17.848
+      relUnit: ppm KH
+      geoArea: europe
+- type: QuantityType
+  id: GH
+  name: general hardness
+  values:
+    - type: Unit
+      id: ppm GH
+      name: parts-per-million GH
+    - type: Unit
+      id: °dGH
+      name: degrees GH
+      relTimes: 17.848
+      relUnit: ppm GH
+      geoArea: europe
 - type: QuantityType
   id: luminousEnergy
   name: Luminous energy

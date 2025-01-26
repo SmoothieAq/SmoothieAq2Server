@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Callable
+from typing import Callable, cast
 
 import aioreactive as rx
 from expression.collections import Block, Map
@@ -8,7 +8,7 @@ from ..div.emit import RawEmit
 from . import devices as dv
 from ..div.enums import convert
 from ..model import expression as aqe
-from ..util.rxutil import distinct_until_changed, sample, AsyncBehaviorSubject, ix
+from ..util.rxutil import distinct_until_changed, sample, AsyncBehaviorSubject, ix, trace
 
 _unaries: dict[aqe.UnaryOp, Callable[[RawEmit], RawEmit]] = {
     aqe.UnaryOp.NOT: lambda e: RawEmit(value=0.0 if e.value else 1.0),
@@ -100,6 +100,16 @@ def find_rx_observables(expr: aqe.Expr, device_id: str) -> dict[str, rx.AsyncObs
             id = expr.observableRef if expr.observableRef.find(":") > 0 else device_id + ":" + expr.observableRef
             if not rx_observables.__contains__(id):
                 def get_observable() -> rx.AsyncObservable[RawEmit]:
+                    elms = id.split('--')
+                    if len(elms) == 2: # Chore input
+                        from .observable import Chore
+                        do = cast(Chore, dv.get_observable(elms[0]))
+                        if not do or not do.inputs or not do.inputs[elms[1]]:
+                            from .observable import log
+                            note = f"Could not find step {elms[1]} in chore {elms[0]} used in expression on device {device_id}"
+                            log.error(note)
+                            return AsyncBehaviorSubject(RawEmit(note=note))
+                        return do.inputs[elms[1]]
                     o = dv.get_rx_observable(id)
                     if not o:
                         from .observable import log

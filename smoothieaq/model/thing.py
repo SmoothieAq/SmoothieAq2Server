@@ -1,5 +1,6 @@
-from smoothieaq.model.base import *
-from smoothieaq.model.expression import *
+from .base import *
+from .expression import *
+from .step import *
 from typing import Optional, Literal, ForwardRef
 from typing_extensions import Annotated
 from pydantic import Field
@@ -48,27 +49,14 @@ ScheduleAt = Annotated[(AtWeekday), Field(discriminator='type')]
 
 
 @dataclass
-class Transition:
-    type: Optional[str] = None  # transitionType
-    length: Optional[str] = None  # hours:mins:secs.msecs
-    arg: Optional[float] = None  # depends on type, blink: blink interval, s: steepness
-    step: Optional[float] = None
-
-
-@dataclass
-class ProgramValue:
-    id: Optional[str] = None  # id of observable
-    value: Optional[float] = None
-    enumValue: Optional[str] = None
-
-
-@dataclass
-class Program:
-    length: Optional[str] = None  # hours:mins:secs.msecs
-    values: Optional[list[ProgramValue]] = None
-    transition: Optional[Transition] = None
-    inTransition: Optional[list[Transition]] = None
-    outTransition: Optional[Transition] = None
+class Plan:
+    everyDays: Optional[int] = None
+    atWeekDay: Optional[list[str]] = None # weekDay
+    at: Optional[str] = None  # hh:mm
+    relativeToLast: Optional[bool] = None
+    warningFraction: Optional[float] = None # default 0.1
+    skipIfLastCloseFraction: Optional[float] = None # default 0.33
+    delayFraction: Optional[float] = None # default 0.15
 
 
 @dataclass
@@ -165,7 +153,23 @@ class Event(AbstractObservable):
     emitControl: Optional[EventEmitControl] = None
 
 
-Observable = Annotated[(Measure | Amount | State | Event), Field(discriminator='type')]
+@dataclass
+class Action(AbstractObservable):
+    type: Literal['Action'] = 'Action'
+    steps: Optional[list[Step]] = None
+    runAsync: Optional[bool] = None
+    timeout: Optional[float] = None
+
+
+@dataclass
+class Chore(AbstractObservable):
+    type: Literal['Chore'] = 'Chore'
+    plan: Optional[Plan] = None
+    steps: Optional[list[Step]] = None
+    autoDone: Optional[bool] = None
+    timeout: Optional[float] = None
+
+Observable = Annotated[(Measure | Amount | State | Event | Action | Chore), Field(discriminator='type')]
 
 
 @dataclass

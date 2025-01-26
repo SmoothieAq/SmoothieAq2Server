@@ -1,15 +1,19 @@
+import asyncio
 import logging
 from enum import StrEnum, auto
-from typing import Optional, Callable
+from typing import Optional, Callable, cast
 
 import aioreactive as rx
+from aioreactive import AsyncSubject
 from expression.collections import Map, Block
+from expression.system import CancellationToken, CancellationTokenSource
 
 from .expression import as_observable
-from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun, emit_empty
+from ..div.emit import RawEmit, ObservableEmit, emit_enum_value, emit_raw_fun, emit_empty, emit_raw
 from ..driver.driver import Status as DriverStatus, Driver
 from ..model import thing as aqt
-from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async, throwIt
+from ..util.rxutil import AsyncBehaviorSubject, publish, distinct_until_changed, take_first_async, throw_it, trace
+from ..div.time import time
 
 log = logging.getLogger(__name__)
 
@@ -18,12 +22,16 @@ class Status(StrEnum):
     RUNNING = auto()
     SCHEDULE_RUNNING = auto()
     PROGRAM_RUNNING = auto()
+    IDLE = auto()
+    STEPS_RUNNING = auto()
+    WAITING_INPUT = auto()
     PAUSED = auto()
     WARNING = auto()
     ALARM = auto()
     ERROR = auto()
     INITIALIZING = auto()
     DISABLED = auto()
+    PLANNED = auto()
 
 
 def driver_init(driver_ref: aqt.DriverRef, id: str) -> Optional[Driver]:
@@ -68,6 +76,8 @@ class Observable[MO: aqt.AbstractObservable]:
         self.id: Optional[str] = None
         self.status_id: Optional[str] = None
         self.driver: Optional[Driver] = None
+        self._rx_status_subject: Optional[rx.AsyncSubject[ObservableEmit]] = None
+        self._rx_subject: Optional[rx.AsyncSubject[ObservableEmit]] = None
         self.rx_status_observable: Optional[rx.AsyncObservable[ObservableEmit]] = None
         self.rx_observable: Optional[rx.AsyncObservable[ObservableEmit]] = None
         self.paused: bool = False
@@ -118,7 +128,7 @@ class Observable[MO: aqt.AbstractObservable]:
         if self.m_observable.expr:
             log.debug(f"observing expression on observable({self.id})")
             o = as_observable(self.m_observable.expr, self.device.id)
-            s = AsyncBehaviorSubject(RawEmit(enumValue=DriverStatus.RUNNING))
+            s = AsyncBehaviorSubject(RawEmit(enumValue=Status.RUNNING))
         elif self.m_observable.driver and self.m_observable.driver.id:
             self.driver = driver_init(self.m_observable.driver, self.id)
             log.debug(f"observing own driver({self.driver.id}) on observable({self.id})")
@@ -128,10 +138,15 @@ class Observable[MO: aqt.AbstractObservable]:
             log.debug(f"observing device driver({self.device.driver.id}) on observable({self.id})")
             o = self.device.driver.rx_observables[self.m_observable.id]
             s = self.device.driver.rx_status_observable
+        elif isinstance(self, Action) or isinstance(self, Chore):
+            self._rx_subject = AsyncBehaviorSubject(RawEmit())
+            o = self._rx_subject
+            self._rx_status_subject = AsyncBehaviorSubject(RawEmit(enumValue=Status.IDLE))
+            s = self._rx_status_subject
         else:
             log.error(f"nothing to observe on observable({self.id})")
             o = AsyncBehaviorSubject(RawEmit())
-            s = AsyncBehaviorSubject(RawEmit(enumValue=DriverStatus.IN_ERROR, note=f"Nothing to observe on {self.id}"))
+            s = AsyncBehaviorSubject(RawEmit(enumValue=Status.ERROR, note=f"Nothing to observe on {self.id}"))
 
         self.rx_observable = rx.pipe(
             self._rx_prefilter(o),
@@ -156,12 +171,17 @@ class Observable[MO: aqt.AbstractObservable]:
                 return RawEmit(enumValue=device_status.enumValue, note=device_status.note)
             if paused:
                 return RawEmit(enumValue=Status.PAUSED)
+            if driver_status.enumValue in {Status.IDLE, Status.STEPS_RUNNING, Status.WAITING_INPUT}: # action or chore
+                if require_status.enumValue == Status.RUNNING:
+                    return  driver_status
+                else:
+                    return require_status
             if driver_status.enumValue in {DriverStatus.RUNNING, DriverStatus.PROGRAM_RUNNING,
                                            DriverStatus.SCHEDULE_RUNNING}:
                 return require_status
-            if driver_status.enumValue in {DriverStatus.IN_ERROR, DriverStatus.CLOSING}:
+            if driver_status.enumValue in {DriverStatus.IN_ERROR, DriverStatus.CLOSING, Status.ERROR}:
                 return RawEmit(enumValue=Status.ERROR, note=driver_status.note)
-            return RawEmit(self.status_id, Status.INITIALIZING)
+            return RawEmit(enumValue=Status.INITIALIZING)
 
         self.rx_status_observable = rx.pipe(
             self.device.rx_status_observable,
@@ -188,7 +208,7 @@ class Observable[MO: aqt.AbstractObservable]:
             ("rx_require", self._rx_require),
             ("rx", self.rx_observable)
         ]:
-            self._disposables.append(await o.subscribe_async(throw=throwIt(t)))
+            self._disposables.append(await o.subscribe_async(throw=throw_it(t)))
             self._disposables.append(await o.connect())
         async def set_curr(o: ObservableEmit) -> None: self.current_value = o
         self._disposables.append(await self.rx_observable.subscribe_async(set_curr))
@@ -209,24 +229,56 @@ class Observable[MO: aqt.AbstractObservable]:
         await self._rx_paused.aclose()
 
     async def measurement(self, value: float, note: str = None) -> None:
-        assert self.enabled()
+        assert self.enabled() and not self.paused
         raise Exception("Measurement not support for this observable")
 
     async def set_value(self, value: float | str | RawEmit, note: str = None):
-        assert self.enabled()
+        assert self.enabled() and not self.paused
         raise Exception("Set_value not support for this observable")
 
     async def add(self, value: float, note: str = None) -> None:
-        assert self.enabled()
+        assert self.enabled() and not self.paused
         raise Exception("Add not support for this observable")
 
     async def reset(self, note: str = None) -> None:
-        assert self.enabled()
+        assert self.enabled() and not self.paused
         raise Exception("Reset not support for this observable")
 
     async def fire(self, value: str | RawEmit, note: str = None):
-        assert self.enabled()
+        assert self.enabled() and not self.paused
         raise Exception("Set_value not support for this observable")
+
+    async def do_action(self):
+        assert self.enabled() and not self.paused
+        raise Exception("do_action not support for this observable")
+
+    async def async_do_action(self):
+        assert self.enabled() and not self.paused
+        raise Exception("async_do_action not support for this observable")
+
+    async def start_chore(self, timeout: Optional[float] = None):
+        assert self.enabled() and not self.paused
+        raise Exception("start_chore not support for this observable")
+
+    async def done(self):
+        assert self.enabled() and not self.paused
+        raise Exception("done not support for this observable")
+
+    async def skip(self):
+        assert self.enabled() and not self.paused
+        raise Exception("skip not support for this observable")
+
+    async def delay(self):
+        assert self.enabled() and not self.paused
+        raise Exception("skip not support for this observable")
+
+    async def input(self, stedId: str, input: RawEmit):
+        assert self.enabled() and not self.paused
+        raise Exception("input not support for this observable")
+
+    async def cancel(self):
+        assert self.enabled() and not self.paused
+        raise Exception("cancel not support for this observable")
 
     def _driver(self) -> Driver:
         return self.driver or self.device.driver
@@ -346,16 +398,18 @@ class Measure(_ValueObservable[aqt.Measure]):
         return o
 
     async def measurement(self, value: float, note: str = None) -> None:
+        assert self.enabled() and not self.paused
         await self._driver().set(self.m_observable.id, RawEmit(value=value, note=note))
 
 
-class _SetObservable[MO: aqt.AbstractObservable](Observable[MO]):
+class SetObservable[MO: aqt.AbstractObservable](Observable[MO]):
 
     def __init__(self):
         super().__init__()
         #self._set_expr_disposable: Optional[DisposableBase] = None
 
     async def set_value(self, value: float | str | RawEmit, note: str = None):
+        assert self.enabled() and not self.paused
         e: RawEmit
         if isinstance(value, float):
             e = RawEmit(value=value, note=note)
@@ -378,9 +432,10 @@ class _SetObservable[MO: aqt.AbstractObservable](Observable[MO]):
             )
 
 
-class Amount(_SetObservable[aqt.Amount], _ValueObservable[aqt.Amount]):
+class Amount(SetObservable[aqt.Amount], _ValueObservable[aqt.Amount]):
 
     async def add(self, value: float, note: str = None) -> None:
+        assert self.enabled() and not self.paused
         log.info(f"doing observable.add({self.id},{value},{note})")
 
         async def _add(e: ObservableEmit):
@@ -388,6 +443,7 @@ class Amount(_SetObservable[aqt.Amount], _ValueObservable[aqt.Amount]):
         await take_first_async(self.rx_observable, _add)
 
     async def reset(self, note: str = None) -> None:
+        assert self.enabled() and not self.paused
         log.info(f"doing observable.reset({self.id},{note})")
 
         async def _reset(e: RawEmit):
@@ -411,7 +467,7 @@ class Amount(_SetObservable[aqt.Amount], _ValueObservable[aqt.Amount]):
             )
 
 
-class State(_SetObservable[aqt.State]):
+class State(SetObservable[aqt.State]):
 
     def _set_require(self):
         require = self.m_observable.require
@@ -432,6 +488,7 @@ class State(_SetObservable[aqt.State]):
 class Event(Observable[aqt.Event]):
 
     async def fire(self, value: str | RawEmit, note: str = None):
+        assert self.enabled() and not self.paused
         log.info(f"doing observable.fire({self.id},{value},{note})")
         await self.set_value(value, note)
 
@@ -439,3 +496,128 @@ class Event(Observable[aqt.Event]):
         if self.m_observable.emitControl and self.m_observable.emitControl.debounceValue:
             o = rx.pipe(o, rx.debounce(self.m_observable.emitControl.debounceValue))
         return o
+
+class ActionOrChore[MO: aqt.AbstractObservable](Observable[MO]):
+
+    def __init__(self):
+        super().__init__()
+        self.steps_task: Optional[asyncio.Task] = None
+
+    async def start(self):
+        await super().start()
+        await self.rx_status_asend(Status.IDLE)
+
+    async def cancel(self):
+        assert self.enabled() and not self.paused
+        assert self.steps_task
+        await self.rx_status_asend(Status.ERROR,f"Cancelled")
+        self.steps_task.cancel()
+        self.steps_task = None
+
+    async def rx_asend(self, enumValue: str, note: Optional[str] = None, value: float = time()):
+        await self._rx_subject.asend(emit_raw(self.id, RawEmit(value=value, enumValue=enumValue, note=note)))
+
+    async def rx_status_asend(self, enumValue: str, note: Optional[str] = None):
+        await self._rx_status_subject.asend(emit_raw(self.id, RawEmit(enumValue=enumValue, note=note)))
+
+    async def _do_steps(self):
+        await self.rx_status_asend(Status.STEPS_RUNNING)
+        from .step import do_steps
+        complete = await do_steps(self.m_observable.steps, self.device, self)
+        if complete:
+            await self.rx_asend("done")
+        await self.rx_status_asend(Status.IDLE)
+
+    def _do_action(self, defaultTimeout: float, timeout: Optional[float] = None):
+        to = timeout or self.m_observable.timeout or defaultTimeout
+        async def __do_action():
+            try:
+                task = asyncio.create_task(self._do_steps())
+                if not self.steps_task:
+                    self.steps_task = task
+                await asyncio.wait_for(task, to)
+            except TimeoutError:
+                await self.rx_status_asend(Status.ERROR, f"Timeout")
+            except Exception as e:
+                log.exception(f"Exception in do_action")
+                raise e
+            finally:
+                self.steps_task = None
+        return __do_action()
+
+    async def _async_do_action(self, timeout: Optional[float] = None):
+        assert not self.steps_task
+
+        self.steps_task = asyncio.create_task(self._do_action(20, timeout))
+
+
+class Chore(ActionOrChore[aqt.Chore]):
+
+    def __init__(self):
+        super().__init__()
+        self.inputs: Optional[dict[str,AsyncBehaviorSubject[RawEmit]]] = None # stepId -> input obs
+
+    async def cancel(self):
+        await super().cancel()
+        self.inputs = None
+
+    async def start_chore(self, timeout: Optional[float] = None):
+        assert self.enabled() and not self.paused
+        assert not self.steps_task
+        assert self.m_observable.steps
+
+        log.info(f"doing observable.start_chore({self.id})")
+        await self._async_do_action(timeout)
+
+    async def input(self, stedId: str, input: RawEmit):
+        assert self.enabled() and not self.paused
+        assert self.inputs and self.inputs.__contains__(stedId)
+        log.info(f"doing observable.input({self.id})")
+        await self.inputs[stedId].asend(input)
+
+    async def done(self):
+        assert self.enabled() and not self.paused
+        assert not self.steps_task
+        assert not self.m_observable.steps
+
+        log.info(f"doing observable.done({self.id})")
+        await self.rx_asend("done")
+        if not self.current_status.enumValue == Status.IDLE:
+            await self.rx_status_asend(Status.IDLE)
+
+    async def skip(self):
+        assert self.enabled() and not self.paused
+        if self.steps_task:
+            await self.cancel()
+        log.info(f"doing observable.skip({self.id})")
+        await self.rx_asend("skip")
+        if not self.current_status.enumValue == Status.IDLE:
+            await self.rx_status_asend(Status.IDLE)
+
+    async def delay(self):
+        assert self.enabled() and not self.paused
+        if self.steps_task:
+            await self.cancel()
+        log.info(f"doing observable.delay({self.id})")
+        await self.rx_asend("delay", value=self.current_value.value)
+        if not self.current_status.enumValue == Status.IDLE:
+            await self.rx_status_asend(Status.IDLE)
+
+
+class Action(ActionOrChore[aqt.Action]):
+
+    async def do_action(self, timeout: Optional[float] = None):
+        assert self.enabled() and not self.paused
+        assert not self.steps_task
+        assert not self.m_observable.runAsync
+
+        log.info(f"doing observable.do_action({self.id})")
+        self.steps_task = asyncio.create_task(self._do_action(2, timeout))
+        await self.steps_task
+
+    async def async_do_action(self, timeout: Optional[float] = None):
+        assert self.enabled() and not self.paused
+        assert not self.m_observable.runAsync
+
+        log.info(f"doing observable.async_do_action({self.id})")
+        await self._async_do_action(timeout)
