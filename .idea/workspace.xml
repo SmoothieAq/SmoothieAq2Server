@@ -5,28 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change afterPath="$PROJECT_DIR$/doc/todo.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/device/plan.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/device/step.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoothieaq/model/step.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/globals.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/driver/homeassistantmqttdriver.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/globalhal.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/globalhals.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/gmqtthal.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/mqtthal.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/xMqttHal.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/model/globals.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smoothieaq/util/timeutil.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/emitdrivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/emitdrivers.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/enums.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/enums.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/device.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/device.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/device/expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/expression.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/drivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/drivers.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/drivers2.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/drivers2-old.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/device/observable.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/observable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/plan.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/plan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/program.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/program.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/scheduleat.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/scheduleat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/device/schedules.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/device/schedules.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/devtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/devtest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/chihirosleddriver_old.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/chihirosleddriver_old.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/driver/driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/driver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/dummydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/leddriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/leddriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/memorydriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/psutildriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/timedriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/timedriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/model/enum.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/enum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/hal/hals.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/hals.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smoothieaq/model/thing.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/model/thing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/util/rxutil.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/util/rxutil.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smoothieaq/modelobject/objectstore.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/modelobject/objectstore.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,24 +85,24 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/jl/PycharmProjects/SmoothieAq2Server/smoothieaq/device",
+    "last_opened_file_path": "/Users/jl/PycharmProjects/SmoothieAq2Server/resources",
     "settings.editor.selected.configurable": "editor.preferences.tabs"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/smoothieaq/device" />
-      <recent name="$PROJECT_DIR$/smoothieaq/driver" />
+      <recent name="$PROJECT_DIR$/resources" />
+      <recent name="$PROJECT_DIR$/smoothieaq/hal/global" />
+      <recent name="$PROJECT_DIR$/smoothieaq/hal" />
       <recent name="$PROJECT_DIR$/smoothieaq/model" />
-      <recent name="$PROJECT_DIR$/smoothieaq/emitdriver" />
-      <recent name="$PROJECT_DIR$/smoothieaq/routes" />
+      <recent name="$PROJECT_DIR$/smoothieaq/device" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/smoothieaq/modelobject" />
+      <recent name="$PROJECT_DIR$/smoothieaq/hal/global" />
       <recent name="$PROJECT_DIR$/smoothieaq/hal" />
+      <recent name="$PROJECT_DIR$/smoothieaq/modelobject" />
       <recent name="$PROJECT_DIR$/smoothieaq/div" />
       <recent name="$PROJECT_DIR$/smoothieaq/device" />
-      <recent name="$PROJECT_DIR$/smoothieaq" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
@@ -292,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736709622705</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="-">
+      <option name="closed" value="true" />
+      <created>1737914576367</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737914576367</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -7,6 +7,7 @@ from expression.collections import Map
 
 from ..div.emit import RawEmit
 from ..hal import hals
+from ..hal.globals import globalhals
 from ..hal.hal import Hal
 from ..util.rxutil import AsyncBehaviorSubject
 
@@ -31,6 +32,7 @@ class Driver[H: Hal]:
         self.path: Optional[str] = None
         self.params: Optional[Map[str, str]] = None
         self.hal: Optional[H] = None
+        self.is_global_hal: bool = False
         self.status: Status = Status.NO_INIT
         so = AsyncBehaviorSubject[RawEmit](self.status)
         self._rx_status_observer: rx.AsyncObserver[RawEmit] = so
@@ -51,12 +53,15 @@ class Driver[H: Hal]:
     def _init(self):
         pass
 
-    def init(self, path: str, params: Map[str, str]) -> 'Driver':
+    def init(self, path: str, hal: str, globalHal: str, params: Map[str, str]) -> 'Driver':
         log.info(f"doing driver.init({self.id}/{path})")
         self.path = path
         self.params = params
-        if params.__contains__("hal"):
-            self.hal = cast(H, hals.get_hal(params["hal"]))
+        if hal:
+            self.hal = cast(H, hals.get_hal(hal))
+        elif globalHal:
+            self.is_global_hal = True
+            self.hal = cast(H, globalhals.get_global_hal(globalHal))
         self._init()
         sos = self._set_subjects()
         self._rx_observers = sos
@@ -68,9 +73,10 @@ class Driver[H: Hal]:
         log.debug(f"doing driver.start({self.id}/{self.path})")
         await self.set_status(Status.STARTING)
         if self.hal:
-            async def error_handler(note: str):
-                await self.set_status(Status.IN_ERROR, note=note)
-            self.hal.init(self.path, self.params, error_handler)
+            if not self.is_global_hal:
+                async def error_handler(note: str):
+                    await self.set_status(Status.IN_ERROR, note=note)
+                self.hal.init(self.path, self.params, error_handler)
             await self.hal.start()
 
     async def poll(self) -> None:

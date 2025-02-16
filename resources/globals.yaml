@@ -1,0 +1,9 @@
+- id: globals
+  globalHals:
+    - id: mqttlocal
+      type: mqtt
+      driverRef:
+        globalHal: GmqttHal
+        path: smoothieaq.local
+
+

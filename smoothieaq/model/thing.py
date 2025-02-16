@@ -49,10 +49,16 @@ ScheduleAt = Annotated[(AtWeekday), Field(discriminator='type')]
 
 
 @dataclass
+class OneTime:
+    atDate: Optional[str] = None # YYYY-MM-DD
+    atTime: Optional[str] = None # hh:mm
+
+
+@dataclass
 class Plan:
     everyDays: Optional[int] = None
-    atWeekDay: Optional[list[str]] = None # weekDay
-    at: Optional[str] = None  # hh:mm
+    atWeekDays: Optional[list[str]] = None # weekDay
+    atTime: Optional[str] = None  # hh:mm
     relativeToLast: Optional[bool] = None
     warningFraction: Optional[float] = None # default 0.1
     skipIfLastCloseFraction: Optional[float] = None # default 0.33
@@ -89,6 +95,8 @@ class EnumRequire:
 class DriverRef:
     id: Optional[str] = None
     path: Optional[str] = None
+    hal: Optional[str] = None
+    globalHal: Optional[str] = None
     params: list[Param] = None
 
 
@@ -165,6 +173,7 @@ class Action(AbstractObservable):
 class Chore(AbstractObservable):
     type: Literal['Chore'] = 'Chore'
     plan: Optional[Plan] = None
+    oneTime: Optional[OneTime] = None
     steps: Optional[list[Step]] = None
     autoDone: Optional[bool] = None
     timeout: Optional[float] = None

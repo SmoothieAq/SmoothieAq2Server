@@ -10,7 +10,8 @@ from expression.system import CancellationTokenSource, CancellationToken
 
 from ..device.device import Device
 from ..device.observable import Status
-from ..device.scheduleat import next_schedule_at, time_length
+from ..device.scheduleat import next_schedule_at
+from ..util.timeutil import time_length
 from ..div.emit import RawEmit
 from ..div.time import time as div_time, duration
 from ..model.thing import Schedule
@@ -29,7 +30,7 @@ async def schedules(schedules: list[Schedule], device: Device, rx_scheduled: rx.
 
     def next_schedule() -> tuple[Schedule, datetime]:
         return (Block.of_seq(device.m_device.schedules)
-                .map(lambda s: (s, next_schedule_at(s.at, time_length(s.program.length))))
+                .map(lambda s: (s, next_schedule_at(s.atTime, time_length(s.program.length))))
                 .sort_with(lambda s: s[1])
                 )[0]
 

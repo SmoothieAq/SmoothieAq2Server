@@ -9,12 +9,14 @@ from pydantic import RootModel
 from pydantic_yaml import parse_yaml_file_as
 from expression.collections.seq import Seq
 
-from smoothieaq.model import enum as aqe
-from smoothieaq.model import thing as aqt
-from smoothieaq.modelobject.objectpersister import ObjectPersister
-from smoothieaq.modelobject.objectsqlite import ObjectSqlite
-from smoothieaq.util.rxutil import ix
-from smoothieaq.device import devices
+from ..model import enum as aqe
+from ..model import thing as aqt
+from smoothieaq.model import globals as aqg
+from ..modelobject.objectpersister import ObjectPersister
+from ..modelobject.objectsqlite import ObjectSqlite
+from ..util.rxutil import ix
+from ..device import devices
+from ..hal.globals import globalhals
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ def _get_persister() -> Optional[ObjectPersister]:
 
 persister: Optional[ObjectPersister] = _get_persister()
 _types: dict[str, Type] = {'enums': aqe.Enum, 'drivers': aqt.Driver, 'devices': aqt.Device,
-                           'emitDrivers': aqt.EmitDriver, 'emitDevices': aqt.EmitDevice}
+                           'emitDrivers': aqt.EmitDriver, 'emitDevices': aqt.EmitDevice, 'globals': aqg.Globals}
 _objects: dict[any, dict[str, any]] = {}
 
 
@@ -69,6 +71,7 @@ async def load() -> None:
     from ..div.enums import load as enum_load
     await enum_load()
     await devices.init()
+    await globalhals.init()
 
 
 async def get[T](typ: Type[T], id: str) -> T:

@@ -123,17 +123,12 @@
 - id: LedDriver
   name: Abstract generic LED driver
   description: |-
-    todo
-  paramDescriptions:
-    - id: LightDriver.p3
-      key: hal
-      defaultValue: NPwmHal
-      description: |-
-        Must be sub-class of NPwmHal
+    Hal must be sub-class of NPwmHal
   basedOnDriver: LightDriver
   templateDevice:
     driver:
       id: LedDriver
+      hal: NPwmHal
     observables:
       - type: Amount
         id: A5
@@ -328,10 +323,8 @@
   templateDevice:
     name: Chihiros LED
     driver:
-      params:
-        - key: hal
-          value: ChihirosLedHal
       path: -fill-with-ble-uuid-
+      hal: ChihirosLedHal
     schedules:
       - id: "1"
         at:
@@ -511,3 +504,26 @@
       - type: State
         id: A
         name: Memory
+- id: HomeAssistantMqttDriver
+  name: Driver for HomeAssistant devices over MQTT
+  canMultiInstance: true
+  templateDevice:
+    name: Sample Aqara Temperature and humidity senser
+    driver:
+      id: HomeAssistantMqttDriver
+      globalHal: mqttlocal
+      #path: zigbee2mqtt/0xa4c1383328c38f05
+      path: zigbee2mqtt/0x00158d00036b2565
+      params:
+        - key: humidity
+          value: A
+    operations:
+    observables:
+      - type: Measure
+        id: A
+        operations:
+        name: Humidity
+        description: Relative humidity
+        quantityType: fraction.%
+        precision: 1
+

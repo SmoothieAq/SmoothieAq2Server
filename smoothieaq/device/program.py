@@ -9,7 +9,7 @@ from expression.collections import Block
 from expression.system import CancellationToken
 
 from ..device.device import Device
-from ..device.scheduleat import time_length
+from ..util.timeutil import time_length
 from ..div.time import time as div_time, duration
 from ..model.thing import Program, ProgramValue
 from ..util.rxutil import ix

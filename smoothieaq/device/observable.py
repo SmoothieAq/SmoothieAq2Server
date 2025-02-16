@@ -40,8 +40,10 @@ def driver_init(driver_ref: aqt.DriverRef, id: str) -> Optional[Driver]:
     from ..driver.drivers import get_driver
     driver = get_driver(driver_ref.id)
     path = driver_ref.path or id
+    hal = driver_ref.hal
+    globalHal = driver_ref.globalHal
     params = Map.of_block(Block(driver_ref.params or []).map(lambda p: (p.key, p.value)))
-    return driver.init(path, params)
+    return driver.init(path, hal, globalHal, params)
 
 
 def _rx_require(
@@ -369,12 +371,15 @@ class Measure(_ValueObservable[aqt.Measure]):
             if not ctl:
                 ctl = aqt.MeasureEmitControl()
             if ctl.decimals is None and precision:
-                p = str(precision).find('')
-                ctl.decimals = len(str(precision)) - p - 1 if p > -1 else 0
+                p = str(precision).find('.')
+                ctl.decimals = len(str(precision)) - p - 1 if p > -1 and precision <0.9999 else 0
             if not ctl.supressSameLimit and precision:
                 ctl.supressSameLimit = precision
         if ctl:
-            if ctl.decimals:
+            if ctl.decimals is not None:
+                def f(e):
+                    v = round(e.value, int(ctl.decimals))
+                    return RawEmit(value=round(e.value, int(ctl.decimals)))
                 o = rx.pipe(
                     o,
                     rx.map(lambda e: RawEmit(value=round(e.value, int(ctl.decimals))))
@@ -556,6 +561,23 @@ class Chore(ActionOrChore[aqt.Chore]):
     def __init__(self):
         super().__init__()
         self.inputs: Optional[dict[str,AsyncBehaviorSubject[RawEmit]]] = None # stepId -> input obs
+        self._rx_plan: Optional[rx.AsyncDisposable] = None
+
+    async def start(self):
+        await super().start()
+        from .plan import plan
+        self._rx_plan = await plan(self)
+
+    async def stop(self) -> None:
+        await super().stop()
+        if self._rx_plan:
+            await self._rx_plan.dispose_async()
+
+    async def _replan(self):
+        if self._rx_plan:
+            await self._rx_plan.dispose_async()
+        from .plan import plan
+        self._rx_plan = await plan(self)
 
     async def cancel(self):
         await super().cancel()
@@ -566,8 +588,12 @@ class Chore(ActionOrChore[aqt.Chore]):
         assert not self.steps_task
         assert self.m_observable.steps
 
+        if self._rx_plan:
+            await self._rx_plan.dispose_async()
         log.info(f"doing observable.start_chore({self.id})")
         await self._async_do_action(timeout)
+        from .plan import plan
+        self._rx_plan = await plan(self)
 
     async def input(self, stedId: str, input: RawEmit):
         assert self.enabled() and not self.paused
@@ -584,6 +610,8 @@ class Chore(ActionOrChore[aqt.Chore]):
         await self.rx_asend("done")
         if not self.current_status.enumValue == Status.IDLE:
             await self.rx_status_asend(Status.IDLE)
+        from .plan import plan
+        self._rx_plan = await plan(self)
 
     async def skip(self):
         assert self.enabled() and not self.paused
@@ -593,6 +621,8 @@ class Chore(ActionOrChore[aqt.Chore]):
         await self.rx_asend("skip")
         if not self.current_status.enumValue == Status.IDLE:
             await self.rx_status_asend(Status.IDLE)
+        from .plan import plan
+        self._rx_plan = await plan(self)
 
     async def delay(self):
         assert self.enabled() and not self.paused
@@ -602,6 +632,8 @@ class Chore(ActionOrChore[aqt.Chore]):
         await self.rx_asend("delay", value=self.current_value.value)
         if not self.current_status.enumValue == Status.IDLE:
             await self.rx_status_asend(Status.IDLE)
+        from .plan import plan
+        self._rx_plan = await plan(self)
 
 
 class Action(ActionOrChore[aqt.Action]):

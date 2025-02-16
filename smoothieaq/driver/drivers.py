@@ -13,6 +13,7 @@ from ..util.dataclassutil import overwrite
 def get_driver(driver_id: str) -> Driver:
     d_module = importlib.import_module("smoothieaq.driver." + driver_id.lower())
     d_class = getattr(d_module, driver_id)
+    # TODO cash d_class
     return d_class()
 
 
