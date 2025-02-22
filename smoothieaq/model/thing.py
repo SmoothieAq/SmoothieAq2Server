@@ -110,7 +110,8 @@ class AbstractObservable(Thing):
 
 @dataclass
 class ValueObservable(AbstractObservable):
-    quantityType: Optional[str] = None
+    quantityType: Optional[str] = None # QuantityTpe
+    unit: Optional[str] = None # Unit of QuantityType
     require: Optional[ValueRequire] = None
     precision: Optional[float] = None
     setExpr: Optional[Expr] = None

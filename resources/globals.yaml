@@ -5,5 +5,8 @@
       driverRef:
         globalHal: GmqttHal
         path: smoothieaq.local
+  discovers:
+    - id: HomeAssistantMqttDiscover
+      globalHal: mqttlocal
 
 

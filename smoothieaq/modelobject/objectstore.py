@@ -72,6 +72,7 @@ async def load() -> None:
     await enum_load()
     await devices.init()
     await globalhals.init()
+    await devices.add_discovers()
 
 
 async def get[T](typ: Type[T], id: str) -> T:

@@ -11,5 +11,6 @@ class GlobalHal(Described):
 @dataclass
 class Globals(Identified):
     globalHals: Optional[list[GlobalHal]] = None
+    discovers: Optional[list[DriverRef]] = None
 
 

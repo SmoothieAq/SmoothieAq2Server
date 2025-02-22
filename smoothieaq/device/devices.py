@@ -2,8 +2,11 @@ from typing import Optional
 
 import aioreactive as rx
 from aioreactive.subject import AsyncMultiSubject
-from expression.collections import Seq
+from expression.collections import Seq, Map, Block
 
+from ..driver.discover import discover as ds, discovers as dss
+from ..model.globals import Globals
+from ..model.thing import DriverRef
 from ..modelobject import objectstore as os
 from .device import Device, Observable
 from ..div.emit import ObservableEmit, emit_empty
@@ -11,8 +14,10 @@ from ..model import thing as aqt
 from ..util.rxutil import ix
 
 devices: dict[str, Device] = dict()
+device_paths: dict[str, str] = dict()
 observables: dict[str, Observable] = dict()
 rx_observables: dict[str, rx.AsyncObservable[ObservableEmit]] = dict()
+discovers: dict[str, ds.Discover] = dict()
 
 _rx_all_subject: rx.AsyncSubject[rx.AsyncObservable[ObservableEmit]] = rx.AsyncSubject()
 rx_all_observables: AsyncMultiSubject[ObservableEmit] = AsyncMultiSubject()
@@ -27,6 +32,17 @@ async def init() -> None:
 def get_last_emit(observable_id: str) -> ObservableEmit:
     return emit_empty(observable_id)  # TODO
 
+async def add_discovers() -> None:
+    for driver in (await os.get(Globals, "globals")).discovers:
+        await add_discover(driver)
+
+async def add_discover(driver: DriverRef) -> None:
+    discover = dss.get_discover(driver.id)
+    discovers[driver.id] = discover
+    params = Map.of_block(Block(driver.params or []).map(lambda p: (p.key, p.value)))
+    discover.init(driver.path, "", driver.globalHal, params)
+    await discover.start()
+
 async def add_devices() -> None:
     for m_device in await os.get_all(aqt.Device):
         await _add_device(m_device)
@@ -35,6 +51,8 @@ async def _add_device(m_device: aqt.Device, start: bool = True) -> None:
     device = Device()
     device.init(m_device)
     devices[m_device.id] = device
+    if m_device.driver:
+        device_paths[(m_device.driver.hal or "") + ":" + (m_device.driver.path or "")] = m_device.id
     rx_observables[device.status_id] = device.rx_status_observable
     for (id, observable) in device.observables.items():
         observables[observable.id] = observable
@@ -62,6 +80,8 @@ async def update_device(m_device: aqt.Device) -> None:
 
 
 async def stop() -> None:
+    for discover in discovers.values():
+        await discover.stop()
     for device in devices.values():
         if device.m_device.enabled is not False:
             await device.stop()

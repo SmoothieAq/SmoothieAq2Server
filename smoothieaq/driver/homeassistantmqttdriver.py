@@ -29,21 +29,20 @@ class HomeAssistantMqttDriver(Driver[MqttHal]):
         self.hal = cast(MqttHal, globalhals.get_global_hal(globalHal))
         self.rx_observables = {}
         for k in self.params.keys():
-            def attr(d: dict) -> Optional[RawEmit]:
-                try:
-                    return RawEmit(d[k])
-                except Exception:
-                    return None
+            def attr(k: str):
+                def _attr(d: dict) -> Optional[RawEmit]:
+                    try:
+                        return RawEmit(float(d[k]))
+                    except Exception:
+                        return None
+                return _attr
 
             obs = rx.pipe(self._rx_mqtt,
-                    rx.map(attr),
-                    rx.filter(lambda re: re is not None)
+                    rx.map(attr(k)),
+                    rx.filter(lambda re: not re is None)
             )
             self.rx_observables[params[k]] = obs
         return self
-
-    async def _on_message(self, json: dict):
-       pass
 
     async def start(self) -> None:
         await super().start()

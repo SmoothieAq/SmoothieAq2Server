@@ -15,7 +15,7 @@ def on_connect(client, flags, rc, properties):
 
 
 def on_disconnect(client, packet, exc=None):
-    log.info("disconnect")
+    log.info(f"disconnect {packet}")
 
 
 def on_subscribe(client, mid, qos, properties):
@@ -32,7 +32,10 @@ class GmqttHal(XMqttHal):
         log.debug(f"message {payload}")
         rx_subject: Optional[rx.AsyncSubject[dict]] = self._find(topic)
         if rx_subject:
-            await rx_subject.asend(json.loads(payload.decode()))
+            d = json.loads(payload.decode())
+            d["_topic"] = topic
+            print(f">>>on {d}")
+            await rx_subject.asend(d)
         return 0
 
     async def global_start(self):
