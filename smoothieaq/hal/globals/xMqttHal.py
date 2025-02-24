@@ -30,10 +30,6 @@ class XMqttHal(MqttHal):
         super().__init__()
         self.host: Optional[str] = None
         self.subscriptions: dict[str, (list[str], rx.AsyncSubject[dict])] = {}
-#        self.started: bool = False
-
-#    def init(self, path: Optional[str], params: Map[str, str], error_handler: Callable[[str], Awaitable[None]] = None):
-#        self.host = params['host']
 
     def _find(self, topic: str) -> Optional[rx.AsyncSubject[dict]]:
         topic_parts = topic_split(topic)
@@ -61,9 +57,8 @@ class XMqttHal(MqttHal):
             self.started = False
             await self.stop()
 
-    async def _publish(self, topic: str, payload: dict):
+    async def _publish(self, topic: str, payload: str):
         pass
 
-    async def publish(self, topic: str, payload: dict):
-        assert self.started
+    async def publish(self, topic: str, payload: str):
         await self._publish(topic, payload)

@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import cast, Optional
 
 import aioreactive as rx
@@ -10,17 +11,16 @@ from ...device import devices
 from ...device.devices import create_new_device
 from ...hal.globals import globalhals
 from ...hal.globals.mqtthal import MqttHal
-from ...model.thing import Device, DriverRef, Measure, Observable, Param, MeasureEmitControl
+from ...model.thing import Device, DriverRef, Measure, Observable, Param, MeasureEmitControl, State, Event
 from ...util.rxutil import AsyncBehaviorSubject
 
 log = logging.getLogger(__name__)
 
 
-def _new_measure(d: dict) -> Measure:
+def _new_measure(type: str, d: dict) -> (str, Measure):
     types = {'temperature': 'temp'}
     units = {}
     measure = Measure()
-    measure.name = d.get('name')
     if d.get('device_class') in types:
         measure.quantityType = types[d.get('device_class')]
     else:
@@ -29,8 +29,32 @@ def _new_measure(d: dict) -> Measure:
         measure.unit = units[d.get('unit_of_measurement')]
     else:
         measure.unit = d.get('unit_of_measurement')
-    measure.emitControl = MeasureEmitControl(supressSameLimit = 0.00001)
-    return measure
+    return ('F:R::', measure)
+
+
+def _new_state(type: str, d: dict) -> (str, State):
+    state = State()
+    if type == 'binary_sensor':
+        state.enumType = 'boolean'
+        return (f"B:R:{d.get('payload_on')}/{d.get('payload_off')}:", state)
+    if type == 'switch':
+        state.enumType = 'boolean'
+        if d.get('command_topic'):
+            state.operations = ["set"]
+        return (f"B:W:{d.get('payload_on')}/{d.get('payload_off')}:{d.get('command_topic')}", state)
+    if type == 'select':
+        state.description = str(d.get('options'))
+        if d.get('command_topic'):
+            state.operations = ["set"]
+        return (f"S:W:{'/'.join(d.get('options'))}:{d.get('command_topic')}", state)
+    raise KeyError
+
+
+def _new_event(type: str, d: dict) -> (str, Event):
+    event = Event()
+    if d.get('command_topic'):
+        event.operations = ["set"]
+    return (f"E:W::{d.get('command_topic')}", event)
 
 
 class HomeAssistantMqttDiscover(Discover[MqttHal]):
@@ -70,24 +94,35 @@ class HomeAssistantMqttDiscover(Discover[MqttHal]):
             device.driver.params = []
             device.observables = []
 
+            m = re.compile(r"\.(\w*)")
+
             next_letter = ['A']
-            def add_obs(name: str, observable: Observable):
+            def add_obs(name: str, d: dict, pv: str, observable: Observable):
                 observable.id = next_letter[0]
-                observable.name = observable.name or name
+                observable.name = d.get('name') or name
+                try:
+                    mo = m.search(d.get('value_template'))
+                    mk = mo.group(1)
+                except:
+                    mk = name
                 next_letter[0] = chr(ord(next_letter[0])+1)
-                device.driver.params.append(Param(key = observable.name, value = observable.id))
+                device.driver.params.append(Param(key = mk, value = f"{observable.id}:{pv}"))
                 device.observables.append(observable)
 
             for k in d.keys():
                 obs = d[k]
                 topic_elements = obs["_topic"].split('/')
                 type = topic_elements[1]
-                if type == 'sensor' and not obs.get('device_class') == 'timestamp':
-                    add_obs(k, _new_measure(obs))
+                if type == 'sensor':
+                    if not obs.get('device_class') == 'timestamp':
+                        add_obs(k, obs, *_new_measure(type, obs))
+                elif type == 'binary_sensor' or type == 'switch' or type == 'select':
+                    add_obs(k, obs, *_new_state(type, obs))
+                elif type == 'button':
+                    add_obs(k, obs, *_new_event(type, obs))
                 else:
                     log.warning(f"unknown type {type} on {device_path} {k}")
 
-            print(f">>>dev: {device}")
             id = await create_new_device(device)
             log.info(f"created new device {id} {device.name} {device.description}")
         except Exception as e:

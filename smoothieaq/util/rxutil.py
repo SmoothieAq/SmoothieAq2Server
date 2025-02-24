@@ -345,3 +345,13 @@ def ix(i: Iterable[_TSource]) -> Seq[_TSource]:
 
 def x(source: AsyncObservable[_TSource]) -> rx.AsyncRx[_TSource]:
     return rx.AsyncRx(source)
+
+
+async def do_later(delay: float, do: Callable[[], Awaitable[None]]) -> None:
+    async def do_it(n: int) -> None:
+        try:
+            await do()
+        finally:
+            await disposable.dispose_async()
+
+    disposable = await rx.interval(delay, 2).subscribe_async(do_it)

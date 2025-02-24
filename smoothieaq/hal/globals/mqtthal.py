@@ -11,5 +11,5 @@ class MqttHal(GlobalHal):
     async def unsubscribe(self, topic: str):
         pass
 
-    async def publish(self, topic: str, payload: dict):
+    async def publish(self, topic: str, payload: str):
         pass

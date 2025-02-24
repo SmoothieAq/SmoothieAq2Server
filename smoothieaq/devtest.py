@@ -31,6 +31,9 @@ async def test():
         mqttd = await dr.get_m_driver("HomeAssistantMqttDriver")
         mqttm = create_m_device(mqttd)
         await dv.create_new_device(mqttm)
+        #await sleep(4)
+        #print("-->!!")
+        #await cast(State, dv.get_observable("4:D")).set_value("true")
         await sleep(20)
 
     if False:

@@ -55,5 +55,5 @@ class GmqttHal(XMqttHal):
     async def _unsubscribe(self, topic: str):
         self.client.unsubscribe(topic)
 
-    async def _publish(self, topic: str, payload: dict):
+    async def _publish(self, topic: str, payload: str):
         self.client.publish(topic, payload)

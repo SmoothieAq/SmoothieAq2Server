@@ -516,7 +516,7 @@
       path: zigbee2mqtt/0x00158d00036b2565
       params:
         - key: humidity
-          value: A
+          value: "A:F:R::"
     operations:
     observables:
       - type: Measure
