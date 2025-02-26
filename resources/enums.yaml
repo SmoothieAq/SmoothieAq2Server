@@ -1,4 +1,24 @@
 - type: EnumSimple
+  id: enablement
+  name: Enablement
+  description:
+  values:
+    - type: EnumValueSimple
+      id: enabled
+      name: Enabled
+    - type: EnumValueSimple
+      id: disabled
+      name: Disabled
+    - type: EnumValueSimple
+      id: deleted
+      name: Deleted
+    - type: EnumValueSimple
+      id: discovered
+      name: Discovered
+    - type: EnumValueSimple
+      id: ignored
+      name: Ignored
+- type: EnumSimple
   id: transitionType
   name: Transition type
   description:

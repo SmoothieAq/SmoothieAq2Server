@@ -12,7 +12,7 @@ class Thing(Named, Described):
     place: Optional[str] = None  # enum place
     category: Optional[str] = None  # enum category
     imageRef: Optional[str] = None
-    enabled: Optional[bool] = None
+    enablement: Optional[str] = None # enum enablement
     pausedIf: Optional[Expr] = None
 
 
@@ -218,7 +218,7 @@ class EmitDevice(Named, Described):
     type: Optional[str] = None  # enum emitDeviceType
     driver: Optional[DriverRef] = None
     operations: Optional[list[str]] = None  # enum emitOperation
-    enabled: Optional[bool] = None
+    enablement: Optional[str] = None # enum enablement
     include: Optional[list[EmitDeviceFilter]] = None
     exclude: Optional[list[EmitDeviceFilter]] = None
     bufferNo: Optional[int] = None

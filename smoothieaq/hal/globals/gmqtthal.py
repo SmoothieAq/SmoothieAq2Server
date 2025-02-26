@@ -44,16 +44,23 @@ class GmqttHal(XMqttHal):
         self.client.on_disconnect = on_disconnect
         self.client.on_subscribe = on_subscribe
         self.client.on_message = self.on_message
-        await self.client.connect(self.host or "smoothieaq.local")
+        try:
+            await self.client.connect(self.host or "smoothieaq.local")
+        except Exception as e:
+            log.error("Could not connect", exc_info=e)
+            # todo, some status observable...
 
     async def global_stop(self):
         await self.client.disconnect()
 
     async def _subscribe(self, topic: str, rx_subscription: rx.AsyncSubject[dict]):
-        self.client.subscribe(topic)
+        if self.client.is_connected:
+            self.client.subscribe(topic)
 
     async def _unsubscribe(self, topic: str):
-        self.client.unsubscribe(topic)
+        if self.client.is_connected:
+            self.client.unsubscribe(topic)
 
     async def _publish(self, topic: str, payload: str):
-        self.client.publish(topic, payload)
+        if self.client.is_connected:
+            self.client.publish(topic, payload)

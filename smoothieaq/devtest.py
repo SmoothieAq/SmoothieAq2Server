@@ -27,7 +27,7 @@ async def test():
         print("error", ex)
     await dv.rx_all_observables.subscribe_async(p,e)
 
-    if True:
+    if False:
         mqttd = await dr.get_m_driver("HomeAssistantMqttDriver")
         mqttm = create_m_device(mqttd)
         await dv.create_new_device(mqttm)
@@ -76,7 +76,7 @@ async def test():
         await edv.create_new_emit_device(edv1)
         await sleep(1)
 
-    if False:
+    if True:
         mdv1 = create_m_device(dr1)
         mdv1.driver.params[0].value = "5"
         mdv1.driver.params[1].value = "7.2"

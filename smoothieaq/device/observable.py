@@ -103,7 +103,7 @@ class Observable[MO: aqt.AbstractObservable]:
         await self.pause(False)
 
     def enabled(self) -> bool:
-        return self.m_observable.enabled is not False and self.device.m_device.enabled is not False
+        return self.m_observable.enablement == 'enabled' and self.device.m_device.enablement == 'enabled'
 
     def init(self, m_observable: aqt.Observable, device: 'Device') -> 'Observable':
         self.id = device.id + ':' + m_observable.id

@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/drivers.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/drivers.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/discover/homeassistantmqttdiscover.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/discover/homeassistantmqttdiscover.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/driver/homeassistantmqttdriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/driver/homeassistantmqttdriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/hal/globals/gmqtthal.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/gmqtthal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/hal/globals/mqtthal.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/mqtthal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/hal/globals/xMqttHal.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/hal/globals/xMqttHal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoothieaq/util/rxutil.py" beforeDir="false" afterPath="$PROJECT_DIR$/smoothieaq/util/rxutil.py" afterDir="false" />
-    </list>
+    <list default="true" id="aefb0a8f-5243-4d3e-9906-aaa25d9ddacd" name="Changes" comment="-" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -302,7 +293,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740249030220</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="-">
+      <option name="closed" value="true" />
+      <created>1740417278725</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1740417278725</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -24,7 +24,7 @@ class EmitDevice:
         self._disposables: list[rx.AsyncDisposable] = []
 
     async def pause(self, paused: bool = True) -> None:
-        assert self.m_emit_device.enabled is not False
+        assert self.m_emit_device.enablement == 'enabled'
         self.paused = paused
 
     async def unpause(self) -> None:
@@ -73,7 +73,7 @@ class EmitDevice:
         self.id = m_emit_device.id
         log.info(f"doing emitdevice.init({self.id})")
 
-        if self.m_emit_device.enabled is not False:
+        if self.m_emit_device.enablement == 'enabled':
             self.driver = await self.driver_init(m_emit_device.driver, self.id)
 
     async def start(self):

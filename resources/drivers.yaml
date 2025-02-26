@@ -502,8 +502,8 @@
       - add
     observables:
       - type: State
-        id: A
         name: Memory
+        id: A
 - id: HomeAssistantMqttDriver
   name: Driver for HomeAssistant devices over MQTT
   canMultiInstance: true

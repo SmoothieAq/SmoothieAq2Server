@@ -31,7 +31,7 @@ class Device:
 
     async def pause(self, paused: bool = True) -> None:
         log.info(f"doing device.pause({self.id},{paused})")
-        assert self.m_device.enabled is not False
+        assert self.m_device.enablement == 'enabled'
         self.paused = paused
         await self._rx_paused.asend(paused)
         for o in self.observables.values():
@@ -49,7 +49,7 @@ class Device:
         self.id = m_device.id
         self.status_id = self.id + '?'
 
-        if self.m_device.enabled is not False:
+        if self.m_device.enablement == 'enabled':
             s: rx.AsyncObservable[RawEmit]
             if m_device.driver and m_device.driver.id:
                 self.driver = driver_init(m_device.driver, self.id)
@@ -115,7 +115,7 @@ class Device:
 
     async def start(self) -> None:
         log.info(f"doing device.start({self.id})")
-        assert self.m_device.enabled is not False
+        assert self.m_device.enablement == 'enabled'
         if self.driver:
             await self.driver.start()
         for t, o in [
@@ -144,7 +144,7 @@ class Device:
 
     async def poll(self) -> None:
         log.info(f"doing device.poll({self.id})")
-        assert self.m_device.enabled is not False
+        assert self.m_device.enablement == 'enabled'
         await self.driver.poll()
 
     async def close(self) -> None:
