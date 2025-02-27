@@ -79,7 +79,7 @@ class EmitDevice:
     async def start(self):
         log.info(f"doing emitdevice.start({self.id})")
         await self.driver.start()
-        self._disposables.append(await rx.pipe(get_rx_device_updates(), trace()).subscribe_async(self.update_filter))
+        self._disposables.append(await rx.pipe(get_rx_device_updates(), rx.filter(lambda d: d.m_device.enablement == 'enabled')).subscribe_async(self.update_filter))
         o = rx.pipe(
             rx_all_observables,
             rx.filter(lambda e: self.filter.get(e.observable_id, True)),

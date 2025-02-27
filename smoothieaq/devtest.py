@@ -17,7 +17,7 @@ import time as t
 async def test():
 
     #time.simulate(start_time=datetime.time(8,25), speed=60, minDuration=0.5)
-    time.simulate(start_time=datetime.time(8,25), speed=5, minDuration=0.5)
+    #time.simulate(start_time=datetime.time(8,25), speed=5, minDuration=0.5)
 
     async def p(e):
         print(
@@ -34,10 +34,10 @@ async def test():
         #await sleep(4)
         #print("-->!!")
         #await cast(State, dv.get_observable("4:D")).set_value("true")
-        await sleep(2000)
+        await sleep(1)
 
-    if False:
-        sl = await edr.find_emit_driver("SqliteEmitDriver")
+    if True:
+        sl = await edr.find_emit_driver("MariadbEmitDriver")
         slv1 = sl.create_m_device()
         #slv1.enabled = True
         await edv.create_new_emit_device(slv1)
@@ -76,7 +76,7 @@ async def test():
         await edv.create_new_emit_device(edv1)
         await sleep(1)
 
-    if False:
+    if True:
         mdv1 = create_m_device(dr1)
         mdv1.driver.params[0].value = "5"
         mdv1.driver.params[1].value = "7.2"
@@ -113,7 +113,7 @@ async def test():
 
     await dv.create_new_device(create_m_device(await dr.get_m_driver("TimeDriver")))
 
-    if False:
+    if True:
         mdv2 = create_m_device(dr2)
         #mdv2.driver.params[0].value = "2"
         await dv.create_new_device(mdv2)
@@ -138,7 +138,7 @@ async def test():
         mdv3.driver.params[2].value = "0.9"
         await dv.create_new_device(mdv3)
 
-    await sleep(20)
+    await sleep(200)
 
     # await sleep(4)
     # d.observables['A'].pause()

@@ -34,3 +34,34 @@
     enabled: true
     exclude:
       - type: time
+- id: MariadbEmitDriver
+  name: Mariadb emit driver
+  description: |-
+    Logs into Mariadb table smoothieaq-emits
+  paramDescriptions:
+    - id: MariadbEmitDriver.p1
+      key: password
+      defaultValue:
+      description: |-
+        Password
+    - id: MariadbEmitDriver.p1
+      key: host
+      defaultValue: 127.0.0.1
+      description: |-
+        Password
+  templateDevice:
+    id: MariadbEmitDriver
+    type: internal
+    category: primary
+    driver:
+      id: MariadbEmitDriver
+      params:
+        - key: password
+          value: hilau
+        - key: host
+          value: smoothieaq.local
+    operations:
+      - emit
+    enabled: true
+    exclude:
+      - type: time
