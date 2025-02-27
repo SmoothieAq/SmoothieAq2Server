@@ -25,7 +25,7 @@ class HomeAssistantMqttDriver(Driver[MqttHal]):
         super().__init__()
         self._rx_mqtt: AsyncBehaviorSubject[dict] = AsyncBehaviorSubject({})
         self._params: dict[str,(str,str,str,list[str],str)] = {}
-        self.rx_availability: Optional[AsyncBehaviorSubject[RawEmit]] = None
+        self.rx_availability: AsyncBehaviorSubject[dict] = AsyncBehaviorSubject[dict]({})
 
     def init(self, path: str, hal: str, globalHal: str, params: Map[str, str]) -> 'Driver':
         log.info(f"doing driver.init({self.id}/{path})")
@@ -74,19 +74,21 @@ class HomeAssistantMqttDriver(Driver[MqttHal]):
             self.rx_observables[obs_id] = obs
 
             def status(t: tuple[tuple[RawEmit, dict], dict]) -> RawEmit:
-                ((stat, avail1), avail2) = t
-                if avail1 and not avail1.get('state') == 'online':
-                    return RawEmit(enumValue=Status.IN_ERROR, note="Bridge not online")
-                if avail2 and not avail2.get('state') == 'online':
-                    return RawEmit(enumValue=Status.IN_ERROR, note="Device not online")
-                return stat
+                try:
+                    ((stat, avail1), avail2) = t
+                    if avail1 and not avail1.get('state') == 'online':
+                        return RawEmit(enumValue=Status.IN_ERROR, note="Bridge not online")
+                    if avail2 and not avail2.get('state') == 'online':
+                        return RawEmit(enumValue=Status.IN_ERROR, note="Device not online")
+                    return stat
+                except Exception as e:
+                    log.error(exc_info=e)
 
             self.rx_status_observable = rx.pipe(self.rx_status_observable,
                              rx.combine_latest(rx_bridge_availability),
                              rx.combine_latest(self.rx_availability),
                              rx.map(status),
                              rx.distinct_until_changed,
-                             publish()
                              )
         return self
 
@@ -104,7 +106,7 @@ class HomeAssistantMqttDriver(Driver[MqttHal]):
     async def start(self) -> None:
         await super().start()
         await self.hal.subscribe(self.path, self._rx_mqtt)
-        await self.hal.subscribe(self.path + "/availability", self._rx_mqtt)
+        await self.hal.subscribe(self.path + "/availability", self.rx_availability)
         await self.set_status(Status.RUNNING)
         global _bridge
         if not _bridge:
