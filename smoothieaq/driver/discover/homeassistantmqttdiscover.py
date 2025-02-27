@@ -76,7 +76,6 @@ class HomeAssistantMqttDiscover(Discover[MqttHal]):
         return self
 
     async def _new_device(self, device_path: str):
-        print(f">>>new: {device_path}: {self._device_paths_in_progress[device_path]}")
         try:
             d = self._device_paths_in_progress[device_path]
             del self._device_paths_in_progress[device_path]
@@ -85,6 +84,8 @@ class HomeAssistantMqttDiscover(Discover[MqttHal]):
             dev = fst['device']
             device = Device()
             device.name = dev.get('name')
+            if device.name == "Zigbee2MQTT Bridge":
+                device.enablement = 'ignored'
             device.description = dev.get('manufacturer') + ' ' + dev.get('model')
             device.make = dev.get('manufacturer') + ' ' + dev.get('model')
             device.driver = DriverRef()

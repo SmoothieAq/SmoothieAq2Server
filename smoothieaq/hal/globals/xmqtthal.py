@@ -53,9 +53,6 @@ class XMqttHal(MqttHal):
     async def unsubscribe(self, topic: str):
         del self.subscriptions[topic]
         await self._unsubscribe(topic)
-        if not self.subscriptions:
-            self.started = False
-            await self.stop()
 
     async def _publish(self, topic: str, payload: str):
         pass

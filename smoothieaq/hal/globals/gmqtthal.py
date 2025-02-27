@@ -5,7 +5,7 @@ from typing import Optional
 import aioreactive as rx
 import gmqtt
 
-from .xMqttHal import XMqttHal
+from .xmqtthal import XMqttHal
 
 log = logging.getLogger(__name__)
 
@@ -34,7 +34,6 @@ class GmqttHal(XMqttHal):
         if rx_subject:
             d = json.loads(payload.decode())
             d["_topic"] = topic
-            print(f">>>on {d}")
             await rx_subject.asend(d)
         return 0
 

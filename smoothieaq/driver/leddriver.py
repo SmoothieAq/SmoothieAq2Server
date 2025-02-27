@@ -42,11 +42,12 @@ class LedDriver(Driver[NPwmHal]):
 
         self.color_leds = Map.of_block(Block.range(0, len(color_ids)).map(color_led))
 
-    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
-        return Map.of_block(
-            self.color_leds.to_list().map(lambda i: i[1].id).append(Block.of(self.onOff_id, self.brightness_id)).map(
-                lambda id: (id, rx.AsyncSubject[RawEmit]()))
-        )
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {id: rx.AsyncSubject[RawEmit]() for id in [i[1].id for i in self.color_leds.to_list()] + [self.onOff_id, self.brightness_id]}
+        #return Map.of_block(
+        #    self.color_leds.to_list().map(lambda i: i[1].id).append(Block.of(self.onOff_id, self.brightness_id)).map(
+        #        lambda id: (id, rx.AsyncSubject[RawEmit]()))
+        #)
 
     async def start(self) -> None:
         await super().start()

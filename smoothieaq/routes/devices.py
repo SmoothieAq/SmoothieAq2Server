@@ -1,13 +1,13 @@
+import aioreactive as rx
 import orjson
 from fastapi import APIRouter, HTTPException, WebSocket
 from fastapi.responses import HTMLResponse
-import aioreactive as rx
 
 from ..device import devices as d
-from ..div.emit import emit_to_transport, RawEmit, emit_to_raw
+from ..div.emit import RawEmit, emit_to_raw
 from ..model import thing as aqt
-from ..util import rxutil as ix
 from ..routes import streamutil
+from ..util import rxutil as ix
 
 router = APIRouter(
     prefix="/devices",

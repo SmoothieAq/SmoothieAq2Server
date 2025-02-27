@@ -47,8 +47,8 @@ class Driver[H: Hal]:
         self.status = status
         await self._rx_status_observer.asend(RawEmit(enumValue=status, note=note))
 
-    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
-        return Map.empty()
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {}
 
     def _init(self):
         pass

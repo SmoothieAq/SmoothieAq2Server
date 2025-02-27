@@ -5,8 +5,18 @@
       driverRef:
         globalHal: GmqttHal
         path: smoothieaq.local
+    - id: btscan
+      type: btscan
+      driverRef:
+        globalHal: BleakScanHal
+        path: bleak
+        params:
+          - key: scanning_mode
+            value: active # only for mac, best to use passive in general
   discovers:
-    - id: HomeAssistantMqttDiscover
-      globalHal: mqttlocal
+    - id: MiFloraDiscover
+      globalHal: btscan
+    #- id: HomeAssistantMqttDiscover
+    #  globalHal: mqttlocal
 
 

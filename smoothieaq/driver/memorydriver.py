@@ -14,8 +14,8 @@ class MemoryDriver(Driver[NoHal]):
     def __init__(self):
         super().__init__()
 
-    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
-        return Map.empty().add(self.rx_key, rx.AsyncSubject[RawEmit]())
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {self.rx_key: rx.AsyncSubject[RawEmit]()}
 
     async def start(self) -> None:
         await super().start()

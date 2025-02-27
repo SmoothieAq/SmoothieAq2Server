@@ -21,12 +21,11 @@ class PsutilDriver(PollingDriver[NoHal]):
     def discover_device_paths(self) -> list[str]:
         return ["computer"]
 
-    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
-        return Map.empty().add(
-            self.rx_key_percent, rx.AsyncSubject[RawEmit]()
-        ).add(
-            self.rx_key_temp, rx.AsyncSubject[RawEmit]()
-        )
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {
+            self.rx_key_percent: rx.AsyncSubject[RawEmit](),
+            self.rx_key_temp: rx.AsyncSubject[RawEmit]()
+        }
 
     def _init(self):
         super()._init()

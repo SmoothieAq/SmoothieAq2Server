@@ -21,8 +21,8 @@ class DummyDriver(PollingDriver[NoHal]):
         self.generateGaussMu: Optional[float] = None
         self.generateGaussSigma: Optional[float] = None
 
-    def _set_subjects(self) -> Map[str, rx.AsyncSubject]:
-        return Map.empty().add(self.rx_key, rx.AsyncSubject[RawEmit]())
+    def _set_subjects(self) -> dict[str, rx.AsyncSubject]:
+        return {self.rx_key: rx.AsyncSubject[RawEmit]()}
 
     def _init(self):
         super()._init()
