@@ -47,7 +47,8 @@ class MiFloraDriver(Driver[BtScanHal]):
             MiFloraDiscover.rx_key_humidity,
             MiFloraDiscover.rx_key_illuminance,
             MiFloraDiscover.rx_key_moisture,
-            MiFloraDiscover.rx_key_conductivity
+            MiFloraDiscover.rx_key_conductivity,
+            MiFloraDiscover.rx_key_rssi
         ]}
 
     def _init(self):
@@ -62,11 +63,15 @@ class MiFloraDriver(Driver[BtScanHal]):
             value = values.get(name)
             if not value is None:
                 await self._rx_observers[id].asend(RawEmit(value))
+        dev = cast(bleak.BLEDevice, d.get('device'))
+        if data.rssi:
+            await self._rx_observers[MiFloraDiscover.rx_key_rssi].asend(RawEmit(float(data.rssi)))
 
     async def start(self) -> None:
         await super().start()
         self._disposables.append(await self._rx_bt.subscribe_async(self._on_message))
         self._sub_id = await self.hal.subscribe(self._rx_bt, address=self.path.split(":")[1])
+        await self.set_status(Status.RUNNING)
 
     async def stop(self) -> None:
         await self.hal.unsubscribe(self._sub_id)

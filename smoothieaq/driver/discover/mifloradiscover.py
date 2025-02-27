@@ -37,6 +37,7 @@ class MiFloraDiscover(Discover[BtScanHal]):
     rx_key_illuminance: str = 'D'
     rx_key_moisture: str = 'E'
     rx_key_conductivity: str = 'F'
+    rx_key_rssi: str = 'G'
 
     def __init__(self):
         super().__init__()
@@ -72,6 +73,7 @@ class MiFloraDiscover(Discover[BtScanHal]):
             device.observables.append(_new_measure(self.rx_key_illuminance,'Illuminance', 'illuminance', 'lux', 1.0))
             device.observables.append(_new_measure(self.rx_key_moisture,'Soil moisture', 'fraction', '%', 1.0))
             device.observables.append(_new_measure(self.rx_key_conductivity,'Soil conductivity', 'conductivity', 'uS/cm', 1.0))
+            device.observables.append(_new_measure(self.rx_key_rssi,'Link quality', 'RSSI', 'dBm', 1.0))
 
             id = await create_new_device(device)
             log.info(f"created new device {id} {device.name} {device.description}")
