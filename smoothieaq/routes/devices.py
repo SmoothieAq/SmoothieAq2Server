@@ -1,6 +1,6 @@
 import aioreactive as rx
-import orjson
 from fastapi import APIRouter, HTTPException, WebSocket
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 
 from ..device import devices as d
@@ -30,10 +30,9 @@ async def get_devices() -> list[aqt.Device]:
 async def websocket_emits(websocket: WebSocket):
     rx_emits: rx.AsyncObservable[bytes] = rx.pipe(
         d.get_rx_device_updates(),
-        rx.map(lambda d: d.m_device),
-        ix.buffer_with_time(0.5, 10),
+        rx.map(lambda d: jsonable_encoder(d, exclude_defaults=True, exclude_none=True, exclude_unset=True)),
+        ix.buffer_with_time(0.5, 5),
         rx.filter(lambda l: len(l) > 0),
-        rx.map(orjson.dumps)
     )
     await streamutil.websocket_stream(websocket, rx_emits)
 

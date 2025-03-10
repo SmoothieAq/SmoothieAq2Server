@@ -1,6 +1,6 @@
 import datetime
 
-# This file is a copy of https://github.com/TheMicDiet/chihiros-led-control/blob/main/commands.py
+# This file is based on https://github.com/TheMicDiet/chihiros-led-control/blob/main/commands.py
 # All credits should go to Michael Dietrich 
 
 

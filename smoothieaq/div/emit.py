@@ -1,6 +1,6 @@
 from ..div import time
 from dataclasses import dataclass
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
 
 
 class Emit:
@@ -68,9 +68,9 @@ def stamp_to_transport(stamp: float) -> int:
     return int(stamp * 10)
 
 
-def emit_to_transport(emit: ObservableEmit) -> list[str]:
+def emit_to_transport(emit: ObservableEmit) -> list[Any]:
     stamp = stamp_to_transport(emit.stamp)
-    value = None if emit.value is None else str(emit.value)
+    value = emit.value
     if emit.note:
         return [emit.observable_id, stamp, value, emit.enumValue, emit.note]
     elif emit.enumValue:

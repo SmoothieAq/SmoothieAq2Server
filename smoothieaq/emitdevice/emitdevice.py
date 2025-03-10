@@ -57,7 +57,8 @@ class EmitDevice:
             def any_match(filters: list[aqt.EmitDeviceFilter]) -> bool:
                 return not filters or any(map(match, filters))
 
-            return any_match(self.m_emit_device.include) and not any_match(self.m_emit_device.exclude)
+            incl = any_match(self.m_emit_device.include) and not any_match(self.m_emit_device.exclude)
+            return incl
 
         log.debug(f"doing emitdevice.update_filter({m_device.id})")
         t1 = (m_device.site, m_device.place, m_device.category, m_device.type)
@@ -79,7 +80,10 @@ class EmitDevice:
     async def start(self):
         log.info(f"doing emitdevice.start({self.id})")
         await self.driver.start()
-        self._disposables.append(await rx.pipe(get_rx_device_updates(), rx.filter(lambda d: d.m_device.enablement == 'enabled')).subscribe_async(self.update_filter))
+        self._disposables.append(await rx.pipe(
+            get_rx_device_updates(),
+            rx.filter(lambda md: md.enablement == 'enabled')
+        ).subscribe_async(self.update_filter))
         o = rx.pipe(
             rx_all_observables,
             rx.filter(lambda e: self.filter.get(e.observable_id, True)),

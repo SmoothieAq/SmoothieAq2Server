@@ -25,7 +25,7 @@ async def get_drivers() -> list[aqt.Driver]:
 
     def driver_without_template_device(m_driver: aqt.Driver):
         d = copy.deepcopy(m_driver)
-        d.templateDevice = None
+        #d.templateDevice = None
         return d
 
     return list(map(driver_without_template_device, await get_m_drivers()))

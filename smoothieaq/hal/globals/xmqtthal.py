@@ -1,3 +1,4 @@
+import logging
 from itertools import zip_longest
 from typing import Optional, Callable, Awaitable
 
@@ -5,6 +6,8 @@ import aioreactive as rx
 from expression.collections import Map
 
 from .mqtthal import MqttHal
+
+log = logging.getLogger(__name__)
 
 
 def topic_split(topic: str) -> list[str]:
@@ -43,6 +46,7 @@ class XMqttHal(MqttHal):
 
 
     async def subscribe(self, topic: str, rx_subscription: rx.AsyncSubject[dict]):
+        log.info(f"subscribe {topic}")
         self.subscriptions[topic] = (topic_split(topic), rx_subscription)
         await self._subscribe(topic, rx_subscription)
 

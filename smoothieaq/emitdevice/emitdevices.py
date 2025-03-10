@@ -1,5 +1,6 @@
 from .emitdevice import EmitDevice
 from ..model import thing as aqt
+from ..modelobject import objectstore as os
 
 emit_devices: dict[str, EmitDevice] = dict()
 
@@ -12,6 +13,11 @@ async def _add_emit_device(m_emit_device: aqt.EmitDevice) -> None:
     emit_devices[emit_device.id] = emit_device
     if m_emit_device.enablement == 'enabled':
         await emit_device.start()
+
+async def add_devices() -> None:
+    for m_emit_device in await os.get_all(aqt.EmitDevice):
+        if not m_emit_device.enablement == 'deleted':
+            await _add_emit_device(m_emit_device)
 
 
 async def stop() -> None:

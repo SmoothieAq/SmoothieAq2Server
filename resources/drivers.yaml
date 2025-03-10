@@ -76,6 +76,7 @@
         description: Current lumen (luminous flux)
         quantityType: luminousFlux.lm
         category: primary
+        precision: 1.0
         expr:
           type: IfExpr
           ifExpr:

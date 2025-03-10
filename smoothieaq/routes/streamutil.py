@@ -1,18 +1,23 @@
+from typing import Any
+
 import aioreactive as rx
 from starlette.websockets import WebSocketState, WebSocketDisconnect
 from fastapi import WebSocket
 
 
-async def websocket_stream(websocket: WebSocket, rx_stream: rx.AsyncObservable[bytes]):
+async def websocket_stream(websocket: WebSocket, rx_stream: rx.AsyncObservable[Any]):
     await websocket.accept()
     try:
         obv = rx.AsyncIteratorObserver(rx_stream)
         async with await rx_stream.subscribe_async(obv) as subscription:
+            prev = None
             async for e in obv:
                 if not websocket.client_state == WebSocketState.CONNECTED:
                     break
                 try:
-                    await websocket.send_bytes(e)
+                    if e != prev:
+                        await websocket.send_json(e)
+                    prev = e
                 except WebSocketDisconnect:
                     break
 
@@ -40,7 +45,7 @@ def stream_test_html(p: str) -> str:
             ws.onmessage = async function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
-                var data = await event.data.text()
+                var data = await event.data
                 var content = document.createTextNode(data)
                 message.appendChild(content)
                 messages.appendChild(message)

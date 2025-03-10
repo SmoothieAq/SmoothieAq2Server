@@ -16,7 +16,9 @@
   discovers:
     - id: MiFloraDiscover
       globalHal: btscan
-    - id: HomeAssistantMqttDiscover
-      globalHal: mqttlocal
+    #- id: HomeAssistantMqttDiscover
+    #  globalHal: mqttlocal
+    - id: ChihirosDiscover
+      globalHal: btscan
 
 

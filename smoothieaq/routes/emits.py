@@ -1,14 +1,14 @@
 import logging
+from typing import Any
 
-import orjson
+import aioreactive as rx
 from fastapi import WebSocket, APIRouter
 from fastapi.responses import HTMLResponse
-import aioreactive as rx
 
 from ..device import devices
 from ..div.emit import emit_to_transport
-from ..util import rxutil as ix
 from ..routes import streamutil
+from ..util import rxutil as ix
 
 log = logging.getLogger(__name__)
 
@@ -21,12 +21,11 @@ router = APIRouter(
 
 @router.websocket("/stream")
 async def websocket_emits(websocket: WebSocket):
-    rx_emits: rx.AsyncObservable[bytes] = rx.pipe(
+    rx_emits: rx.AsyncObservable[Any] = rx.pipe(
         devices.rx_all_observables,
         rx.map(emit_to_transport),
-        ix.buffer_with_time(2, 5),
+        ix.buffer_with_time(1, 20),
         rx.filter(lambda l: len(l) > 0),
-        rx.map(orjson.dumps)
     )
     await streamutil.websocket_stream(websocket, rx_emits)
 

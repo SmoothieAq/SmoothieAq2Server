@@ -27,20 +27,27 @@ async def test():
         print("error", ex)
     await dv.rx_all_observables.subscribe_async(p,e)
 
-    if True:
+    await dv.create_new_device(create_m_device(await dr.get_m_driver("TimeDriver")))
+
+    await sleep(5)
+    #await cast(Amount, dv.get_observable("1:R2")).set_value(0.)
+    #await cast(Amount, dv.get_observable("1:G2")).set_value(5.)
+    #await sleep(100)
+
+    if False:
+        sl = await edr.find_emit_driver("MariadbEmitDriver")
+        slv1 = sl.create_m_device()
+        #slv1.enabled = True
+        await edv.create_new_emit_device(slv1)
+        await sleep(1)
+
+    if False:
         mqttd = await dr.get_m_driver("HomeAssistantMqttDriver")
         mqttm = create_m_device(mqttd)
         await dv.create_new_device(mqttm)
         #await sleep(4)
         #print("-->!!")
         #await cast(State, dv.get_observable("4:D")).set_value("true")
-        await sleep(1)
-
-    if True:
-        sl = await edr.find_emit_driver("MariadbEmitDriver")
-        slv1 = sl.create_m_device()
-        #slv1.enabled = True
-        await edv.create_new_emit_device(slv1)
         await sleep(1)
 
     if False:
@@ -63,7 +70,7 @@ async def test():
 
         await sleep(4)
 
-    if True:
+    if False:
         dr1 = await dr.get_m_driver("DummyDriver")
         dr2 = await dr.get_m_driver("PsutilDriver")
         dr3 = await dr.get_m_driver("MemoryMeasureDriver")
@@ -76,9 +83,9 @@ async def test():
         await edv.create_new_emit_device(edv1)
         await sleep(1)
 
-    if True:
+    if False:
         mdv1 = create_m_device(dr1)
-        mdv1.driver.params[0].value = "5"
+        mdv1.driver.params[0].value = "30"
         mdv1.driver.params[1].value = "7.2"
         mdv1.driver.params[2].value = "0.4"
         control = aqt.MeasureEmitControl()
@@ -98,22 +105,20 @@ async def test():
         mdv1.observables.append(action)
         chore = aqt.Chore(id='C1', steps=[st.WaitStep(id='wait', timeToWait=1), st.DoneStep(id='done')])
         mdv1.observables.append(chore)
-        await dv.create_new_device(mdv1)
+        ecid = await dv.create_new_device(mdv1)
 
         await sleep(3)
-        #await dv.observables['1:X1'].async_do_action()
-        #await dv.observables['1:C1'].skip()
-        #await dv.observables['1:C1'].delay()
-        #await dv.observables['1:C1'].done()
-        await dv.observables['1:C1'].start_chore()
+        #await dv.observables[ecid+':C1'].async_do_action()
+        #await dv.observables[ecid+':C1'].skip()
+        #await dv.observables[ecid+':C1'].delay()
+        #await dv.observables[ecid+':C1'].done()
+        await dv.observables[ecid+':C1'].start_chore()
         await sleep(2)
-        await dv.observables['1:C1'].input('done', RawEmit())
+        await dv.observables[ecid+':C1'].input('done', RawEmit())
 
         #await sleep(9)
 
-    await dv.create_new_device(create_m_device(await dr.get_m_driver("TimeDriver")))
-
-    if True:
+    if False:
         mdv2 = create_m_device(dr2)
         #mdv2.driver.params[0].value = "2"
         await dv.create_new_device(mdv2)
@@ -138,7 +143,7 @@ async def test():
         mdv3.driver.params[2].value = "0.9"
         await dv.create_new_device(mdv3)
 
-    await sleep(200)
+    #await sleep(200)
 
     # await sleep(4)
     # d.observables['A'].pause()
